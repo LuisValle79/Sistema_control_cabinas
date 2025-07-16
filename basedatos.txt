@@ -1,0 +1,135 @@
+CREATE TABLE machines (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20) NOT NULL DEFAULT 'inactive',
+    start_time TIMESTAMP,
+    time_used INTEGER NOT NULL DEFAULT 0,
+    paid BOOLEAN NOT NULL DEFAULT FALSE,
+    faults JSONB NOT NULL DEFAULT '{}',
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE usage_history (
+    id SERIAL PRIMARY KEY,
+    machine_id INTEGER REFERENCES machines(id),
+    session_id UUID DEFAULT gen_random_uuid(),
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    duration INTEGER NOT NULL,
+    paid BOOLEAN NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insertar las 15 cabinas iniciales
+INSERT INTO machines (id, name, created_at, status, time_used, paid, faults)
+VALUES 
+    (1, 'Cabina 1', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (2, 'Cabina 2', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (3, 'Cabina 3', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (4, 'Cabina 4', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (5, 'Cabina 5', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (6, 'Cabina 6', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (7, 'Cabina 7', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (8, 'Cabina 8', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (9, 'Cabina 9', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (10, 'Cabina 10', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (11, 'Cabina 11', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (12, 'Cabina 12', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (13, 'Cabina 13', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (14, 'Cabina 14', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}'),
+    (15, 'Cabina 15', CURRENT_TIMESTAMP, 'inactive', 0, FALSE, '{}');
+
+    -- Tabla para tipos de cabinas (estándar, premium, gaming, etc.)
+CREATE TABLE machine_types (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    description TEXT,
+    hourly_rate DECIMAL(10, 2) NOT NULL DEFAULT 2.00, -- Tarifa por hora
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(name)
+);
+
+-- Tabla para usuarios/clientes
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    full_name VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    UNIQUE(username)
+);
+
+-- Modificar la tabla machines para incluir tipo de cabina y estado de mantenimiento
+ALTER TABLE machines
+    ADD COLUMN machine_type_id INTEGER REFERENCES machine_types(id),
+    ADD COLUMN maintenance_status VARCHAR(20) NOT NULL DEFAULT 'operational', -- operational, in_maintenance, out_of_service
+    ADD COLUMN last_maintenance TIMESTAMP;
+
+-- Tabla para reservas de cabinas
+CREATE TABLE reservations (
+    id SERIAL PRIMARY KEY,
+    machine_id INTEGER REFERENCES machines(id),
+    user_id INTEGER REFERENCES users(id),
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending', -- pending, confirmed, cancelled
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT valid_time_range CHECK (end_time > start_time)
+);
+
+-- Tabla para historial de mantenimiento
+CREATE TABLE maintenance_logs (
+    id SERIAL PRIMARY KEY,
+    machine_id INTEGER REFERENCES machines(id),
+    description TEXT NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP,
+    technician_name VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT valid_maintenance_time CHECK (end_time IS NULL OR end_time > start_time)
+);
+
+-- Tabla para auditoría de cambios en el sistema
+CREATE TABLE audit_logs (
+    id SERIAL PRIMARY KEY,
+    table_name VARCHAR(50) NOT NULL,
+    record_id INTEGER NOT NULL,
+    action VARCHAR(20) NOT NULL, -- insert, update, delete
+    user_id INTEGER REFERENCES users(id),
+    changes JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Modificar usage_history para asociar sesiones con usuarios
+ALTER TABLE usage_history
+    ADD COLUMN user_id INTEGER REFERENCES users(id),
+    ADD COLUMN machine_type_id INTEGER REFERENCES machine_types(id);
+
+-- Índices para mejorar el rendimiento
+CREATE INDEX idx_machines_status ON machines(status);
+CREATE INDEX idx_machines_maintenance_status ON machines(maintenance_status);
+CREATE INDEX idx_usage_history_session_id ON usage_history(session_id);
+CREATE INDEX idx_usage_history_user_id ON usage_history(user_id);
+CREATE INDEX idx_reservations_machine_id ON reservations(machine_id);
+CREATE INDEX idx_reservations_time ON reservations(start_time, end_time);
+CREATE INDEX idx_maintenance_logs_machine_id ON maintenance_logs(machine_id);
+CREATE INDEX idx_audit_logs_table_action ON audit_logs(table_name, action);
+
+-- Insertar tipos de cabinas iniciales
+INSERT INTO machine_types (name, description, hourly_rate)
+VALUES
+    ('Standard', 'Cabina estándar para uso general', 1.00),
+    ('Premium', 'Cabina con mejor hardware y comodidad', 2.00),
+    ('Gaming', 'Cabina optimizada para juegos', 3.00);
+
+-- Actualizar las cabinas existentes con un tipo por defecto (Standard)
+UPDATE machines
+SET machine_type_id = (SELECT id FROM machine_types WHERE name = 'Standard'),
+    maintenance_status = 'operational';
+
+-- Insertar un usuario administrador por defecto
+INSERT INTO users (username, email, full_name, is_active)
+VALUES ('admin', 'admin@gmail.com', 'Administrador', TRUE);
