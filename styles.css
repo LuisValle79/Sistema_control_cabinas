@@ -1,3 +1,88 @@
+/* Mejoras visuales para las interfaces de configuración y reportes */
+.card-header {
+    border-top-left-radius: 1rem !important;
+    border-top-right-radius: 1rem !important;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+.card {
+    border-radius: 1rem !important;
+}
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+.bg-white {
+    background-color: #fff !important;
+}
+.btn-primary, .btn-secondary, .btn-info, .btn-warning {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.form-label {
+    font-weight: 500;
+}
+.table thead th {
+    vertical-align: middle;
+    font-size: 1rem;
+}
+.table td, .table th {
+    vertical-align: middle;
+}
+.navbar .fw-bold {
+    font-size: 1.3rem;
+}
+.sidebar .nav-link.active {
+    background: linear-gradient(90deg, #2563eb 0%, #60a5fa 100%);
+    color: #fff !important;
+    border-radius: 0.75rem;
+    font-weight: 600;
+}
+.sidebar .nav-link.active i {
+    color: #fff !important;
+}
+.sidebar .nav-link {
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+}
+.sidebar .nav-section-title {
+    font-size: 0.95rem;
+    color: #b0b0b0;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.user-info {
+    margin-top: 2rem;
+    padding: 1rem 0.5rem 0.5rem 0.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+.user-avatar {
+    background: #2563eb;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.user-details .user-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+.user-details .user-role {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+@media (max-width: 991px) {
+    .card {
+        margin-bottom: 1.5rem;
+    }
+}
 /* ========== ESTILOS GLOBALES ========== */
 :root {
     --primary-color: #3b82f6;

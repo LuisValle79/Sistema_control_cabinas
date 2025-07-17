@@ -54,7 +54,218 @@ function initApp() {
         initUsersPage();
     } else if (currentPage === 'rentals.html') {
         initRentalsPage();
+    } else if (currentPage === 'settings.html') {
+        initSettingsPage();
+    } else if (currentPage === 'reports.html') {
+        initReportsPage();
     }
+// ========== PÁGINA DE CONFIGURACIÓN ==========
+function initSettingsPage() {
+    // Cargar valores guardados
+    loadSettings();
+
+    // Guardar Tarifas y Horarios
+    const tariffForm = document.getElementById('tariff-form');
+    if (tariffForm) {
+        tariffForm.addEventListener('submit', function(e) { e.preventDefault(); saveTariffSettings(); });
+        tariffForm.querySelector('button[type="button"]').addEventListener('click', saveTariffSettings);
+    }
+
+    // Guardar Datos del Local
+    const localForm = document.getElementById('local-form');
+    if (localForm) {
+        localForm.addEventListener('submit', function(e) { e.preventDefault(); saveLocalSettings(); });
+        localForm.querySelector('button[type="button"]').addEventListener('click', saveLocalSettings);
+    }
+
+    // Guardar Variables Generales
+    const generalForm = document.getElementById('general-form');
+    if (generalForm) {
+        generalForm.addEventListener('submit', function(e) { e.preventDefault(); saveGeneralSettings(); });
+        generalForm.querySelector('button[type="button"]').addEventListener('click', saveGeneralSettings);
+    }
+
+    // Cambiar contraseña admin
+    const securityForm = document.getElementById('security-form');
+    if (securityForm) {
+        securityForm.addEventListener('submit', function(e) { e.preventDefault(); changeAdminPassword(); });
+        securityForm.querySelector('button[type="button"]').addEventListener('click', changeAdminPassword);
+    }
+}
+
+function loadSettings() {
+    // Tarifas y horarios
+    const tariff = JSON.parse(localStorage.getItem('settings-tariff')) || { hour: 2.00, open: '08:00', close: '22:00' };
+    document.getElementById('tariff-hour').value = tariff.hour;
+    document.getElementById('open-time').value = tariff.open;
+    document.getElementById('close-time').value = tariff.close;
+
+    // Datos del local
+    const local = JSON.parse(localStorage.getItem('settings-local')) || { name: 'Netbox Huacho Red', address: '', phone: '' };
+    document.getElementById('local-name').value = local.name;
+    document.getElementById('local-address').value = local.address;
+    document.getElementById('local-phone').value = local.phone;
+
+    // Variables generales
+    const general = JSON.parse(localStorage.getItem('settings-general')) || { minTime: 30, welcome: 'Bienvenido a Netbox' };
+    document.getElementById('min-rental-time').value = general.minTime;
+    document.getElementById('welcome-message').value = general.welcome;
+}
+
+function saveTariffSettings() {
+    const hour = parseFloat(document.getElementById('tariff-hour').value) || 2.00;
+    const open = document.getElementById('open-time').value;
+    const close = document.getElementById('close-time').value;
+    localStorage.setItem('settings-tariff', JSON.stringify({ hour, open, close }));
+    showAlert('Éxito', 'Tarifas y horarios guardados correctamente.', 'success');
+}
+
+function saveLocalSettings() {
+    const name = document.getElementById('local-name').value.trim();
+    const address = document.getElementById('local-address').value.trim();
+    const phone = document.getElementById('local-phone').value.trim();
+    localStorage.setItem('settings-local', JSON.stringify({ name, address, phone }));
+    showAlert('Éxito', 'Datos del local guardados correctamente.', 'success');
+}
+
+function saveGeneralSettings() {
+    const minTime = parseInt(document.getElementById('min-rental-time').value) || 30;
+    const welcome = document.getElementById('welcome-message').value.trim();
+    localStorage.setItem('settings-general', JSON.stringify({ minTime, welcome }));
+    showAlert('Éxito', 'Variables generales guardadas correctamente.', 'success');
+}
+
+function changeAdminPassword() {
+    const password = document.getElementById('admin-password').value;
+    if (!password || password.length < 4) {
+        showAlert('Error', 'La contraseña debe tener al menos 4 caracteres.', 'error');
+        return;
+    }
+    localStorage.setItem('settings-admin-password', password);
+    document.getElementById('admin-password').value = '';
+    showAlert('Éxito', 'Contraseña de administrador cambiada correctamente.', 'success');
+}
+
+// ========== PÁGINA DE REPORTES ==========
+function initReportsPage() {
+    // Inicializar filtros y eventos
+    document.getElementById('report-type').addEventListener('change', updateReport);
+    document.getElementById('report-from').addEventListener('change', updateReport);
+    document.getElementById('report-to').addEventListener('change', updateReport);
+    document.querySelector('button[onclick="generateReport()"]')?.addEventListener('click', updateReport);
+    document.querySelector('button[onclick="exportReport()"]')?.addEventListener('click', exportReportExcel);
+    document.querySelector('button[onclick="exportPDF()"]')?.addEventListener('click', exportReportPDF);
+    updateReport();
+}
+
+function updateReport() {
+    // Obtener filtros
+    const type = document.getElementById('report-type').value;
+    const from = document.getElementById('report-from').value;
+    const to = document.getElementById('report-to').value;
+
+    // Filtrar datos según tipo y fechas
+    let filtered = [];
+    if (type === 'rentals') {
+        filtered = rentalsData;
+    } else if (type === 'income') {
+        filtered = rentalsData.filter(r => r.status === 'completed');
+    } else if (type === 'usage') {
+        filtered = rentalsData;
+    }
+    if (from) {
+        filtered = filtered.filter(r => new Date(r.start_time) >= new Date(from));
+    }
+    if (to) {
+        filtered = filtered.filter(r => new Date(r.start_time) <= new Date(to + 'T23:59:59'));
+    }
+
+    // Actualizar tabla
+    const tbody = document.getElementById('report-table-body');
+    tbody.innerHTML = '';
+    filtered.forEach(r => {
+        const client = usersData.find(u => u.id === r.client_id);
+        const machine = machinesData.find(m => m.id === r.machine_id);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${r.id}</td>
+            <td>${client ? client.name : '-'}</td>
+            <td>${machine ? machine.name : '-'}</td>
+            <td>${r.start_time ? formatTime(new Date(r.start_time)) : '-'}</td>
+            <td>${r.end_time ? formatTime(new Date(r.end_time)) : '-'}</td>
+            <td>${r.time_used || 0} min</td>
+            <td>${r.status || '-'}</td>
+            <td>S/ ${(r.amount || 0).toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    // Actualizar gráfico
+    updateReportChart(type, filtered);
+}
+
+let reportChartInstance = null;
+function updateReportChart(type, data) {
+    const chartContainer = document.getElementById('report-chart');
+    chartContainer.innerHTML = '';
+    const canvas = document.createElement('canvas');
+    chartContainer.appendChild(canvas);
+
+    let labels = [];
+    let values = [];
+    let label = '';
+    if (type === 'rentals' || type === 'usage') {
+        // Agrupar por cabina
+        const cabinas = {};
+        data.forEach(r => {
+            const machine = machinesData.find(m => m.id === r.machine_id);
+            const name = machine ? machine.name : 'Desconocida';
+            cabinas[name] = (cabinas[name] || 0) + 1;
+        });
+        labels = Object.keys(cabinas);
+        values = Object.values(cabinas);
+        label = 'Alquileres';
+    } else if (type === 'income') {
+        // Agrupar ingresos por cabina
+        const ingresos = {};
+        data.forEach(r => {
+            const machine = machinesData.find(m => m.id === r.machine_id);
+            const name = machine ? machine.name : 'Desconocida';
+            ingresos[name] = (ingresos[name] || 0) + (r.amount || 0);
+        });
+        labels = Object.keys(ingresos);
+        values = Object.values(ingresos);
+        label = 'Ingresos (S/)';
+    }
+
+    if (reportChartInstance) {
+        reportChartInstance.destroy();
+    }
+    reportChartInstance = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: label,
+                data: values,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+}
+
+function exportReportExcel() {
+    showAlert('Exportar', 'Funcionalidad de exportación a Excel simulada. Integra SheetJS o similar para exportar real.', 'info');
+}
+function exportReportPDF() {
+    showAlert('Exportar', 'Funcionalidad de exportación a PDF simulada. Integra jsPDF o similar para exportar real.', 'info');
+}
 }
 
 /**
