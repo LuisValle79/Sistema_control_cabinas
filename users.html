@@ -278,6 +278,351 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="main.js"></script>
+    <script>
+
+/**
+ * Sistema de Control de Cabinas - users.html
+ * Archivo JavaScript principal para la página de gestión de usuarios
+ * Gestiona la creación, edición, eliminación lógica, restauración y visualización de usuarios
+ * Pestaña 'Usuarios Activos' muestra usuarios activos (active, is_deleted=false)
+ * Pestaña 'Usuarios Inactivos' muestra usuarios inactivos (inactive), eliminados (is_deleted=true) y otros estados
+ */
+
+// ========== DATOS LOCALES ==========
+let usersData = [
+    { id: 1, name: "Juan Pérez", email: "juan.perez@example.com", phone: "1234567890", role: "Administrador", status: "active", password: "hashed_password_1", created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 2, name: "María García", email: "maria.garcia@example.com", phone: "0987654321", role: "Cliente", status: "active", password: "hashed_password_2", created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 3, name: "Carlos López", email: "carlos.lopez@example.com", phone: "5555555555", role: "Empleado", status: "inactive", password: "hashed_password_3", created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 4, name: "Ana Martínez", email: "ana.martinez@example.com", phone: "4444444444", role: "Cliente", status: "active", password: "hashed_password_4", created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 5, name: "Luis Fernández", email: "luis.fernandez@example.com", phone: "3333333333", role: "Cliente", status: "inactive", password: "hashed_password_5", created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false }
+];
+
+let auditLogsData = [];
+
+// ========== INICIALIZACIÓN DE LA PÁGINA ==========
+function initUsersPage() {
+    // Cargar tablas iniciales
+    loadUserTable(true); // Usuarios activos
+    loadUserTable(false); // Usuarios inactivos o eliminados
+
+    // Configurar eventos
+    const toggleBtn = document.getElementById('toggle-btn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleSidebar);
+    }
+
+    const userForm = document.getElementById('userForm');
+    if (userForm) {
+        userForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveUser();
+        });
+    }
+}
+
+// ========== FUNCIONES DE CARGA DE DATOS ==========
+function loadUserTable(isActive) {
+    const tableBody = document.getElementById(isActive ? 'active-users-table' : 'inactive-users-table');
+    if (!tableBody) return;
+
+    tableBody.innerHTML = '';
+    let users;
+    if (isActive) {
+        // Pestaña Usuarios Activos: solo usuarios activos (active, is_deleted=false)
+        users = usersData.filter(user => !user.is_deleted && user.status === 'active');
+    } else {
+        // Pestaña Usuarios Inactivos: usuarios inactivos, eliminados o en otros estados
+        users = usersData.filter(user => user.status === 'inactive' || user.is_deleted);
+    }
+
+    if (users.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="7" class="text-center">No hay usuarios ${isActive ? 'activos' : 'inactivos o eliminados'} en este momento.</td></tr>`;
+        return;
+    }
+
+    users.forEach(user => {
+        const statusText = user.is_deleted ? 'Eliminado' : getStatusText(user.status);
+        const statusBadge = user.is_deleted ? '<span class="badge bg-danger">Eliminado</span>' : getStatusBadge(user.status);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.id}</td>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>${user.phone}</td>
+            <td>${user.role}</td>
+            <td>${formatDateTime(new Date(user.created_at))}</td>
+            <td>
+                ${!user.is_deleted ? `
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="openEditUserModal(${user.id})" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteUser(${user.id})" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                ` : `
+                    <button class="btn btn-sm btn-outline-success" onclick="restoreUser(${user.id})" title="Restaurar">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                `}
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// ========== FUNCIONES DE GESTIÓN DE USUARIOS ==========
+function openCreateUserModal() {
+    const modal = new bootstrap.Modal(document.getElementById('userModal'));
+    document.getElementById('userModalLabel').textContent = 'Agregar Usuario';
+    document.getElementById('userForm').reset();
+    document.getElementById('userId').value = '';
+    document.getElementById('userRole').value = 'Cliente';
+    document.getElementById('userPassword').required = true;
+    modal.show();
+}
+
+function openEditUserModal(userId) {
+    const user = usersData.find(u => u.id === userId && !u.is_deleted);
+    if (!user) {
+        showAlert('Error', 'No se encontró el usuario.', 'error');
+        return;
+    }
+    document.getElementById('userModalLabel').textContent = 'Editar Usuario';
+    document.getElementById('userId').value = user.id;
+    document.getElementById('userName').value = user.name;
+    document.getElementById('userEmail').value = user.email;
+    document.getElementById('userPhone').value = user.phone;
+    document.getElementById('userRole').value = user.role;
+    document.getElementById('userPassword').value = '';
+    document.getElementById('userPassword').required = false; // Contraseña opcional al editar
+    new bootstrap.Modal(document.getElementById('userModal')).show();
+}
+
+function saveUser() {
+    const userId = document.getElementById('userId').value;
+    const name = document.getElementById('userName').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
+    const phone = document.getElementById('userPhone').value.trim();
+    const role = document.getElementById('userRole').value;
+    const password = document.getElementById('userPassword').value.trim();
+
+    // Validaciones
+    if (!name || !email || !phone || !role || (!userId && !password)) {
+        showAlert('Error', 'Por favor, complete todos los campos requeridos.', 'error');
+        return;
+    }
+
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showAlert('Error', 'El email no es válido.', 'error');
+        return;
+    }
+
+    // Validar que el email no esté duplicado
+    const existingUser = usersData.find(u => u.email.toLowerCase() === email.toLowerCase() && u.id !== parseInt(userId) && !u.is_deleted);
+    if (existingUser) {
+        showAlert('Error', 'Ya existe un usuario con ese email.', 'error');
+        return;
+    }
+
+    // Validar formato de teléfono (10 dígitos numéricos)
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+        showAlert('Error', 'El teléfono debe tener 10 dígitos numéricos.', 'error');
+        return;
+    }
+
+    const currentTime = new Date().toISOString();
+
+    if (userId) {
+        // Editar usuario existente
+        const userIndex = usersData.findIndex(u => u.id === parseInt(userId) && !u.is_deleted);
+        if (userIndex === -1) {
+            showAlert('Error', 'No se encontró el usuario para editar.', 'error');
+            return;
+        }
+        const oldUser = { ...usersData[userIndex] };
+        usersData[userIndex] = {
+            ...usersData[userIndex],
+            name,
+            email,
+            phone,
+            role,
+            password: password ? `hashed_${password}` : oldUser.password,
+            updated_at: currentTime
+        };
+        auditLogsData.push({
+            id: auditLogsData.length + 1,
+            table_name: 'users',
+            record_id: userId,
+            action: 'update',
+            changes: {
+                name: oldUser.name !== name ? { old: oldUser.name, new: name } : null,
+                email: oldUser.email !== email ? { old: oldUser.email, new: email } : null,
+                phone: oldUser.phone !== phone ? { old: oldUser.phone, new: phone } : null,
+                role: oldUser.role !== role ? { old: oldUser.role, new: role } : null,
+                password: password ? { old: '********', new: '********' } : null
+            },
+            created_at: currentTime
+        });
+        showAlert('Éxito', 'Usuario actualizado correctamente.', 'success');
+    } else {
+        // Crear nuevo usuario
+        const newId = usersData.length > 0 ? Math.max(...usersData.map(u => u.id)) + 1 : 1;
+        usersData.push({
+            id: newId,
+            name,
+            email,
+            phone,
+            role,
+            status: 'active',
+            password: `hashed_${password}`,
+            created_at: currentTime,
+            updated_at: currentTime,
+            is_deleted: false
+        });
+        auditLogsData.push({
+            id: auditLogsData.length + 1,
+            table_name: 'users',
+            record_id: newId,
+            action: 'insert',
+            changes: { name, email, phone, role, password: '********' },
+            created_at: currentTime
+        });
+        showAlert('Éxito', 'Usuario agregado correctamente.', 'success');
+    }
+
+    bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+    loadUserTable(true);
+    loadUserTable(false);
+}
+
+function deleteUser(userId) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'El usuario será eliminado y aparecerá en la pestaña de Usuarios Inactivos.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar',
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-danger me-2',
+            cancelButton: 'btn btn-light'
+        }
+    }).then(result => {
+        if (result.isConfirmed) {
+            const userIndex = usersData.findIndex(u => u.id === userId && !u.is_deleted);
+            if (userIndex === -1) {
+                showAlert('Error', 'No se encontró el usuario para eliminar.', 'error');
+                return;
+            }
+            usersData[userIndex].is_deleted = true;
+            usersData[userIndex].updated_at = new Date().toISOString();
+            auditLogsData.push({
+                id: auditLogsData.length + 1,
+                table_name: 'users',
+                record_id: userId,
+                action: 'delete',
+                changes: { is_deleted: true },
+                created_at: new Date().toISOString()
+            });
+            showAlert('Éxito', 'Usuario eliminado correctamente. Ahora aparece en Usuarios Inactivos.', 'success');
+            loadUserTable(true);
+            loadUserTable(false);
+        }
+    });
+}
+
+function restoreUser(userId) {
+    Swal.fire({
+        title: '¿Restaurar usuario?',
+        text: 'El usuario será restaurado y aparecerá en la pestaña correspondiente según su estado.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Restaurar',
+        cancelButtonText: 'Cancelar',
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-success me-2',
+            cancelButton: 'btn btn-light'
+        }
+    }).then(result => {
+        if (result.isConfirmed) {
+            const userIndex = usersData.findIndex(u => u.id === userId && u.is_deleted);
+            if (userIndex === -1) {
+                showAlert('Error', 'No se encontró el usuario para restaurar.', 'error');
+                return;
+            }
+            usersData[userIndex].is_deleted = false;
+            usersData[userIndex].updated_at = new Date().toISOString();
+            auditLogsData.push({
+                id: auditLogsData.length + 1,
+                table_name: 'users',
+                record_id: userId,
+                action: 'restore',
+                changes: { is_deleted: false },
+                created_at: new Date().toISOString()
+            });
+            const user = usersData[userIndex];
+            const destinationTab = user.status === 'active' ? 'Usuarios Activos' : 'Usuarios Inactivos';
+            showAlert('Éxito', `Usuario restaurado correctamente. Ahora aparece en ${destinationTab}.`, 'success');
+            loadUserTable(true);
+            loadUserTable(false);
+        }
+    });
+}
+
+// ========== FUNCIONES DE UTILIDAD ==========
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar-wrapper');
+    const content = document.getElementById('content');
+    sidebar.classList.toggle('active');
+    content.classList.toggle('collapsed');
+}
+
+function formatDateTime(date) {
+    return `${date.toLocaleDateString('es-ES')} ${date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+}
+
+function getStatusText(status) {
+    switch (status) {
+        case 'active': return 'Activo';
+        case 'inactive': return 'Inactivo';
+        default: return 'Desconocido';
+    }
+}
+
+function getStatusBadge(status) {
+    switch (status) {
+        case 'active': return '<span class="badge bg-success">Activo</span>';
+        case 'inactive': return '<span class="badge bg-warning">Inactivo</span>';
+        default: return '<span class="badge bg-secondary">Desconocido</span>';
+    }
+}
+
+function showAlert(title, message, type) {
+    Swal.fire({
+        title: title,
+        text: message,
+        icon: type,
+        confirmButtonText: 'Aceptar',
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-primary',
+            popup: 'animated fadeIn'
+        }
+    });
+}
+
+// ========== INICIALIZACIÓN DE LA APLICACIÓN ==========
+document.addEventListener('DOMContentLoaded', () => {
+    initUsersPage();
+});
+
+
+
+    </script>
 </body>
 </html>

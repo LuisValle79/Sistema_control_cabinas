@@ -4,20 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reportes - Sistema de Cabinas</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <link rel="stylesheet" href="styles.css" />
   <style>
     :root {
       --primary-color: #2563eb;
       --light-bg: #f4f7fe;
-      --card-radius: 1.2rem;
+      --card-radius: 1rem;
       --transition-normal: 0.3s ease-in-out;
+      --text-color: #1f2937;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     body {
-      background: linear-gradient(120deg, #f0f4ff 0%, #f8fafc 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     #sidebar-wrapper {
@@ -31,6 +33,7 @@
       padding: 1rem 0;
       z-index: 1000;
       overflow-y: auto;
+      transition: left var(--transition-normal);
     }
 
     .sidebar .logo img {
@@ -50,15 +53,16 @@
     }
 
     .nav-link:hover, .nav-link.active {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255, 255, 255, 0.15);
     }
 
     .nav-link i {
       margin-right: 10px;
+      font-size: 1.1rem;
     }
 
     .nav-section-title {
-      font-weight: bold;
+      font-weight: 600;
       font-size: 0.85rem;
       padding: 10px 20px;
       opacity: 0.7;
@@ -88,12 +92,18 @@
     #page-content-wrapper {
       margin-left: 250px;
       transition: margin-left var(--transition-normal);
-      padding: 2rem;
+      padding: 1.5rem;
     }
 
     .card {
       border-radius: var(--card-radius);
-      box-shadow: 0 2px 16px rgba(60, 72, 100, 0.1);
+      box-shadow: var(--shadow-sm);
+      border: none;
+      transition: transform var(--transition-normal);
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
     }
 
     .card-body.bg-light {
@@ -102,25 +112,31 @@
 
     .form-label {
       font-weight: 600;
+      color: var(--text-color);
     }
 
     .btn {
       border-radius: 0.5rem;
+      font-weight: 500;
     }
 
     .table {
-      overflow: hidden;
       border-radius: 0.7rem;
+      overflow: hidden;
+    }
+
+    .table thead {
+      background-color: var(--light-bg);
     }
 
     #report-chart {
-      height: 320px;
+      height: 300px;
+      max-width: 100%;
     }
 
     @media (max-width: 991px) {
       #sidebar-wrapper {
         left: -250px;
-        transition: left var(--transition-normal);
       }
       #sidebar-wrapper.active {
         left: 0;
@@ -170,8 +186,7 @@
           </div>
         </div>
       </nav>
-      <br>
-      <div class="main-content-container">
+      <div class="main-content-container container mt-4">
         <div class="row g-4">
           <div class="col-12">
             <div class="card border-0 shadow-sm mb-4">
@@ -212,7 +227,6 @@
               </div>
             </div>
           </div>
-
           <div class="col-12">
             <div class="card border-0 shadow-sm mb-4">
               <div class="card-body bg-white">
@@ -221,7 +235,6 @@
               </div>
             </div>
           </div>
-
           <div class="col-12">
             <div class="card border-0 shadow-sm mb-4">
               <div class="card-body bg-white">
@@ -235,7 +248,7 @@
                         <th>Cabina</th>
                         <th>Inicio</th>
                         <th>Fin</th>
-                        <th>Tiempo</th>
+                        <th>Tiempo (min)</th>
                         <th>Estado</th>
                         <th>Monto</th>
                       </tr>
@@ -248,41 +261,379 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
-  <script src="main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const ctx = document.createElement('canvas');
-      ctx.id = 'chart-canvas';
-      document.getElementById('report-chart').appendChild(ctx);
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Cabina 1', 'Cabina 2', 'Cabina 3'],
-          datasets: [{
-            label: 'Alquileres',
-            data: [12, 19, 7],
-            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false
-            }
-          }
-        }
-      });
+
+
+/**
+ * Sistema de Control de Cabinas - reports.html
+ * Archivo JavaScript principal para la página de reportes
+ * Genera reportes de alquileres, ingresos y uso de cabinas basados en machinesData, usersData y rentalsData
+ * Soporta filtros por tipo de reporte y rango de fechas, gráficos con Chart.js, y exportación a Excel y PDF
+ * Respeta eliminación lógica (is_deleted) para máquinas y usuarios
+ */
+
+// ========== DATOS LOCALES ==========
+let machinesData = [
+    { id: 1, name: "Cabina 1", status: "inactive", location: "Sala 1", specs: "Intel i5, 8GB RAM, GTX 1050", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 2, name: "Cabina 2", status: "active", location: "Sala 1", specs: "Intel i7, 16GB RAM, GTX 1060", start_time: "2025-07-17 09:00:00", time_used: 120, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-17 11:00:00", is_deleted: false },
+    { id: 3, name: "Cabina 3", status: "inactive", location: "Sala 2", specs: "AMD Ryzen 5, 8GB RAM, RX 570", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 4, name: "Cabina 4", status: "maintenance", location: "Sala 2", specs: "Intel i5, 8GB RAM, GTX 1050Ti", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: true },
+    { id: 5, name: "Cabina 5", status: "inactive", location: "Sala 3", specs: "AMD Ryzen 7, 16GB RAM, RTX 2060", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false }
+];
+
+let usersData = [
+    { id: 1, name: "Juan Pérez", email: "juan.perez@example.com", phone: "1234567890", role: "Administrador", status: "active", password: "hashed_password_1", created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 2, name: "María García", email: "maria.garcia@example.com", phone: "0987654321", role: "Cliente", status: "active", password: "hashed_password_2", created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 3, name: "Carlos López", email: "carlos.lopez@example.com", phone: "5555555555", role: "Empleado", status: "inactive", password: "hashed_password_3", created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 4, name: "Ana Martínez", email: "ana.martinez@example.com", phone: "4444444444", role: "Cliente", status: "active", password: "hashed_password_4", created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 5, name: "Luis Fernández", email: "luis.fernandez@example.com", phone: "3333333333", role: "Cliente", status: "inactive", password: "hashed_password_5", created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: true }
+];
+
+let rentalsData = [
+    { id: 1, user_id: 2, machine_id: 1, start_time: "2025-07-16 10:00:00", end_time: "2025-07-16 12:00:00", time_used: 120, paid: true, amount: 24.00, created_at: "2025-07-16 10:00:00", updated_at: "2025-07-16 12:00:00", is_deleted: false },
+    { id: 2, user_id: 4, machine_id: 2, start_time: "2025-07-16 14:00:00", end_time: "2025-07-16 16:30:00", time_used: 150, paid: true, amount: 30.00, created_at: "2025-07-16 14:00:00", updated_at: "2025-07-16 16:30:00", is_deleted: false },
+    { id: 3, user_id: 2, machine_id: 3, start_time: "2025-07-17 09:00:00", end_time: "2025-07-17 11:00:00", time_used: 120, paid: false, amount: 24.00, created_at: "2025-07-17 09:00:00", updated_at: "2025-07-17 11:00:00", is_deleted: false },
+    { id: 4, user_id: 4, machine_id: 1, start_time: "2025-07-15 11:00:00", end_time: "2025-07-15 12:00:00", time_used: 60, paid: true, amount: 12.00, created_at: "2025-07-15 11:00:00", updated_at: "2025-07-15 12:00:00", is_deleted: false },
+    { id: 5, user_id: 5, machine_id: 4, start_time: "2025-07-14 15:00:00", end_time: "2025-07-14 17:00:00", time_used: 120, paid: true, amount: 24.00, created_at: "2025-07-14 15:00:00", updated_at: "2025-07-14 17:00:00", is_deleted: true }
+];
+
+let auditLogsData = [];
+
+// ========== INICIALIZACIÓN DE LA PÁGINA ==========
+let reportChart = null;
+
+function initReportsPage() {
+    // Configurar eventos
+    const toggleBtn = document.getElementById('toggle-btn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleSidebar);
+    }
+
+    // Inicializar fechas por defecto
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('report-to').value = today;
+    const oneWeekAgo = new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().split('T')[0];
+    document.getElementById('report-from').value = oneWeekAgo;
+
+    // Generar reporte inicial
+    generateReport();
+}
+
+// ========== FUNCIONES DE REPORTES ==========
+function generateReport() {
+    const reportType = document.getElementById('report-type').value;
+    const fromDate = new Date(document.getElementById('report-from').value);
+    const toDate = new Date(document.getElementById('report-to').value);
+    toDate.setHours(23, 59, 59, 999); // Incluir todo el día
+
+    if (!fromDate || !toDate || fromDate > toDate) {
+        showAlert('Error', 'Por favor, seleccione un rango de fechas válido.', 'error');
+        return;
+    }
+
+    const filteredRentals = rentalsData.filter(rental => {
+        if (rental.is_deleted) return false;
+        const startTime = new Date(rental.start_time);
+        return startTime >= fromDate && startTime <= toDate;
     });
+
+    // Renderizar tabla
+    renderReportTable(filteredRentals, reportType);
+
+    // Renderizar gráfico
+    renderReportChart(filteredRentals, reportType);
+
+    // Registrar acción en auditoría
+    auditLogsData.push({
+        id: auditLogsData.length + 1,
+        table_name: 'reports',
+        record_id: null,
+        action: 'generate',
+        changes: { report_type: reportType, from_date: fromDate.toISOString(), to_date: toDate.toISOString() },
+        created_at: new Date().toISOString()
+    });
+}
+
+function renderReportTable(rentals, reportType) {
+    const tableBody = document.getElementById('report-table-body');
+    tableBody.innerHTML = '';
+
+    if (rentals.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="8" class="text-center">No hay datos para el período seleccionado.</td></tr>`;
+        return;
+    }
+
+    rentals.forEach(rental => {
+        const user = usersData.find(u => u.id === rental.user_id && !u.is_deleted);
+        const machine = machinesData.find(m => m.id === rental.machine_id && !m.is_deleted);
+        if (!user || !machine) return;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${rental.id}</td>
+            <td>${user.name}</td>
+            <td>${machine.name}</td>
+            <td>${formatDateTime(new Date(rental.start_time))}</td>
+            <td>${rental.end_time ? formatDateTime(new Date(rental.end_time)) : '-'}</td>
+            <td>${rental.time_used}</td>
+            <td>${rental.paid ? '<span class="badge bg-success">Pagado</span>' : '<span class="badge bg-warning">Pendiente</span>'}</td>
+            <td>$${rental.amount.toFixed(2)}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function renderReportChart(rentals, reportType) {
+    const ctx = document.getElementById('chart-canvas');
+    if (!ctx) {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'chart-canvas';
+        document.getElementById('report-chart').appendChild(canvas);
+    }
+
+    if (reportChart) {
+        reportChart.destroy();
+    }
+
+    let chartConfig = {};
+
+    if (reportType === 'rentals') {
+        const machineUsage = {};
+        rentals.forEach(rental => {
+            const machine = machinesData.find(m => m.id === rental.machine_id && !m.is_deleted);
+            if (machine) {
+                machineUsage[machine.name] = (machineUsage[machine.name] || 0) + 1;
+            }
+        });
+
+        chartConfig = {
+            type: 'bar',
+            data: {
+                labels: Object.keys(machineUsage),
+                datasets: [{
+                    label: 'Cantidad de Alquileres',
+                    data: Object.values(machineUsage),
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: true, position: 'top' } },
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'Alquileres' } } }
+            }
+        };
+    } else if (reportType === 'income') {
+        const dailyIncome = {};
+        rentals.forEach(rental => {
+            if (!rental.paid) return;
+            const date = new Date(rental.start_time).toLocaleDateString('es-ES');
+            dailyIncome[date] = (dailyIncome[date] || 0) + rental.amount;
+        });
+
+        chartConfig = {
+            type: 'line',
+            data: {
+                labels: Object.keys(dailyIncome).sort((a, b) => new Date(a.split('/').reverse().join('-')) - new Date(b.split('/').reverse().join('-'))),
+                datasets: [{
+                    label: 'Ingresos ($)',
+                    data: Object.values(dailyIncome),
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: true, position: 'top' } },
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'Ingresos ($)' } } }
+            }
+        };
+    } else if (reportType === 'usage') {
+        const machineUsage = {};
+        rentals.forEach(rental => {
+            const machine = machinesData.find(m => m.id === rental.machine_id && !m.is_deleted);
+            if (machine) {
+                machineUsage[machine.name] = (machineUsage[machine.name] || 0) + rental.time_used;
+            }
+        });
+
+        chartConfig = {
+            type: 'pie',
+            data: {
+                labels: Object.keys(machineUsage),
+                datasets: [{
+                    label: 'Tiempo de Uso (min)',
+                    data: Object.values(machineUsage),
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.5)',
+                        'rgba(255, 99, 132, 0.5)',
+                        'rgba(75, 192, 192, 0.5)',
+                        'rgba(255, 206, 86, 0.5)',
+                        'rgba(153, 102, 255, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: true, position: 'right' } }
+            }
+        };
+    }
+
+    reportChart = new Chart(document.getElementById('chart-canvas'), chartConfig);
+}
+
+// ========== EXPORTACIÓN DE REPORTES ==========
+function exportReport() {
+    const reportType = document.getElementById('report-type').value;
+    const fromDate = new Date(document.getElementById('report-from').value);
+    const toDate = new Date(document.getElementById('report-to').value);
+    toDate.setHours(23, 59, 59, 999);
+
+    const filteredRentals = rentalsData.filter(rental => {
+        if (rental.is_deleted) return false;
+        const startTime = new Date(rental.start_time);
+        return startTime >= fromDate && startTime <= toDate;
+    });
+
+    const data = filteredRentals.map(rental => {
+        const user = usersData.find(u => u.id === rental.user_id && !u.is_deleted);
+        const machine = machinesData.find(m => m.id === rental.machine_id && !m.is_deleted);
+        return {
+            ID: rental.id,
+            Cliente: user ? user.name : 'N/A',
+            Cabina: machine ? machine.name : 'N/A',
+            Inicio: formatDateTime(new Date(rental.start_time)),
+            Fin: rental.end_time ? formatDateTime(new Date(rental.end_time)) : '-',
+            'Tiempo (min)': rental.time_used,
+            Estado: rental.paid ? 'Pagado' : 'Pendiente',
+            Monto: `$${rental.amount.toFixed(2)}`
+        };
+    });
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
+    XLSX.write(wb, `Reporte_${reportType}_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+    auditLogsData.push({
+        id: auditLogsData.length + 1,
+        table_name: 'reports',
+        record_id: null,
+        action: 'export_excel',
+        changes: { report_type: reportType, from_date: fromDate.toISOString(), to_date: toDate.toISOString() },
+        created_at: new Date().toISOString()
+    });
+}
+
+function exportPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    const reportType = document.getElementById('report-type').value;
+    const fromDate = new Date(document.getElementById('report-from').value);
+    const toDate = new Date(document.getElementById('report-to').value);
+    toDate.setHours(23, 59, 59, 999);
+
+    const filteredRentals = rentalsData.filter(rental => {
+        if (rental.is_deleted) return false;
+        const startTime = new Date(rental.start_time);
+        return startTime >= fromDate && startTime <= toDate;
+    });
+
+    doc.setFontSize(16);
+    doc.text(`Reporte de ${reportType === 'rentals' ? 'Alquileres' : reportType === 'income' ? 'Ingresos' : 'Uso de Cabinas'}`, 20, 20);
+    doc.setFontSize(12);
+    doc.text(`Período: ${fromDate.toLocaleDateString('es-ES')} - ${toDate.toLocaleDateString('es-ES')}`, 20, 30);
+
+    const tableData = filteredRentals.map(rental => {
+        const user = usersData.find(u => u.id === rental.user_id && !u.is_deleted);
+        const machine = machinesData.find(m => m.id === rental.machine_id && !m.is_deleted);
+        return [
+            rental.id.toString(),
+            user ? user.name : 'N/A',
+            machine ? machine.name : 'N/A',
+            formatDateTime(new Date(rental.start_time)),
+            rental.end_time ? formatDateTime(new Date(rental.end_time)) : '-',
+            rental.time_used.toString(),
+            rental.paid ? 'Pagado' : 'Pendiente',
+            `$${rental.amount.toFixed(2)}`
+        ];
+    });
+
+    doc.autoTable({
+        head: [['ID', 'Cliente', 'Cabina', 'Inicio', 'Fin', 'Tiempo (min)', 'Estado', 'Monto']],
+        body: tableData,
+        startY: 40,
+        theme: 'striped',
+        headStyles: { fillColor: [37, 99, 235] },
+        styles: { fontSize: 8, cellPadding: 2 }
+    });
+
+    doc.save(`Reporte_${reportType}_${new Date().toISOString().split('T')[0]}.pdf`);
+
+    auditLogsData.push({
+        id: auditLogsData.length + 1,
+        table_name: 'reports',
+        record_id: null,
+        action: 'export_pdf',
+        changes: { report_type: reportType, from_date: fromDate.toISOString(), to_date: toDate.toISOString() },
+        created_at: new Date().toISOString()
+    });
+}
+
+// ========== FUNCIONES DE UTILIDAD ==========
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar-wrapper');
+    const content = document.getElementById('page-content-wrapper');
+    sidebar.classList.toggle('active');
+    content.classList.toggle('collapsed');
+}
+
+function formatDateTime(date) {
+    return `${date.toLocaleDateString('es-ES')} ${date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+}
+
+function showAlert(title, message, type) {
+    Swal.fire({
+        title: title,
+        text: message,
+        icon: type,
+        confirmButtonText: 'Aceptar',
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-primary',
+            popup: 'animated fadeIn'
+        }
+    });
+}
+
+// ========== INICIALIZACIÓN DE LA APLICACIÓN ==========
+document.addEventListener('DOMContentLoaded', () => {
+    initReportsPage();
+});
+
+
+
   </script>
 </body>
 </html>

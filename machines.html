@@ -275,6 +275,344 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="main.js"></script>
+    <script>
+
+/**
+ * Sistema de Control de Cabinas - machines.html
+ * Archivo JavaScript principal para la página de gestión de máquinas
+ * Gestiona la creación, edición, eliminación lógica, restauración y visualización de máquinas
+ * Pestaña 'Máquinas Activas' muestra máquinas disponibles (inactive, is_deleted=false)
+ * Pestaña 'Máquinas Inactivas' muestra máquinas ocupadas (active), en mantenimiento (maintenance) y eliminadas (is_deleted=true)
+ */
+
+// ========== DATOS LOCALES ==========
+let machinesData = [
+    { id: 1, name: "Cabina 1", status: "inactive", location: "Sala 1", specs: "Intel i5, 8GB RAM, GTX 1050", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 2, name: "Cabina 2", status: "inactive", location: "Sala 1", specs: "Intel i7, 16GB RAM, GTX 1060", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 3, name: "Cabina 3", status: "inactive", location: "Sala 2", specs: "AMD Ryzen 5, 8GB RAM, RX 570", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 4, name: "Cabina 4", status: "inactive", location: "Sala 2", specs: "Intel i5, 8GB RAM, GTX 1050Ti", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false },
+    { id: 5, name: "Cabina 5", status: "inactive", location: "Sala 3", specs: "AMD Ryzen 7, 16GB RAM, RTX 2060", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", updated_at: "2025-07-13 05:58:06.89838", is_deleted: false }
+];
+
+let auditLogsData = [];
+
+// ========== INICIALIZACIÓN DE LA PÁGINA ==========
+function initMachinesPage() {
+    // Cargar tablas iniciales
+    loadTable(true); // Máquinas disponibles (inactive)
+    loadTable(false); // Máquinas ocupadas, en mantenimiento o eliminadas
+
+    // Configurar eventos
+    const toggleBtn = document.getElementById('toggle-btn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleSidebar);
+    }
+
+    const machineForm = document.getElementById('machineForm');
+    if (machineForm) {
+        machineForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveMachine();
+        });
+    }
+}
+
+// ========== FUNCIONES DE CARGA DE DATOS ==========
+function loadTable(isActive) {
+    const tableBody = document.getElementById(isActive ? 'active-machines-table' : 'inactive-machines-table');
+    if (!tableBody) return;
+
+    tableBody.innerHTML = '';
+    let machines;
+    if (isActive) {
+        // Pestaña Máquinas Activas: solo máquinas disponibles (inactive, is_deleted=false)
+        machines = machinesData.filter(machine => !machine.is_deleted && machine.status === 'inactive');
+    } else {
+        // Pestaña Máquinas Inactivas: máquinas ocupadas, en mantenimiento o eliminadas
+        machines = machinesData.filter(machine => machine.status === 'active' || machine.status === 'maintenance' || machine.is_deleted);
+    }
+
+    if (machines.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="7" class="text-center">No hay máquinas ${isActive ? 'disponibles' : 'ocupadas, en mantenimiento o eliminadas'} en este momento.</td></tr>`;
+        return;
+    }
+
+    machines.forEach(machine => {
+        const statusText = machine.is_deleted ? 'Eliminada' : getStatusText(machine.status);
+        const statusBadge = machine.is_deleted ? '<span class="badge bg-danger">Eliminada</span>' : getStatusBadge(machine.status);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${machine.id}</td>
+            <td>${machine.name}</td>
+            <td>${statusBadge}</td>
+            <td>${machine.location}</td>
+            <td>${machine.specs}</td>
+            <td>${formatDateTime(new Date(machine.updated_at))}</td>
+            <td>
+                ${!machine.is_deleted ? `
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="openEditModal(${machine.id})" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteMachine(${machine.id})" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                ` : `
+                    <button class="btn btn-sm btn-outline-success" onclick="restoreMachine(${machine.id})" title="Restaurar">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                `}
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// ========== FUNCIONES DE GESTIÓN DE MÁQUINAS ==========
+function openCreateModal() {
+    const modal = new bootstrap.Modal(document.getElementById('machineModal'));
+    document.getElementById('machineModalLabel').textContent = 'Agregar Máquina';
+    document.getElementById('machineForm').reset();
+    document.getElementById('machineId').value = '';
+    document.getElementById('machineStatus').value = 'Disponible';
+    modal.show();
+}
+
+function openEditModal(machineId) {
+    const machine = machinesData.find(m => m.id === machineId && !m.is_deleted);
+    if (!machine) {
+        showAlert('Error', 'No se encontró la máquina.', 'error');
+        return;
+    }
+    document.getElementById('machineModalLabel').textContent = 'Editar Máquina';
+    document.getElementById('machineId').value = machine.id;
+    document.getElementById('machineName').value = machine.name;
+    document.getElementById('machineStatus').value = getStatusText(machine.status);
+    document.getElementById('machineLocation').value = machine.location;
+    document.getElementById('machineSpecs').value = machine.specs;
+    new bootstrap.Modal(document.getElementById('machineModal')).show();
+}
+
+function saveMachine() {
+    const machineId = document.getElementById('machineId').value;
+    const name = document.getElementById('machineName').value.trim();
+    const statusText = document.getElementById('machineStatus').value;
+    const location = document.getElementById('machineLocation').value.trim();
+    const specs = document.getElementById('machineSpecs').value.trim();
+
+    if (!name || !statusText || !location || !specs) {
+        showAlert('Error', 'Por favor, complete todos los campos.', 'error');
+        return;
+    }
+
+    // Validar que el nombre no esté duplicado
+    const existingMachine = machinesData.find(m => m.name.toLowerCase() === name.toLowerCase() && m.id !== parseInt(machineId) && !m.is_deleted);
+    if (existingMachine) {
+        showAlert('Error', 'Ya existe una máquina con ese nombre.', 'error');
+        return;
+    }
+
+    const statusMap = {
+        'Disponible': 'inactive',
+        'Ocupada': 'active',
+        'En Mantenimiento': 'maintenance'
+    };
+    const status = statusMap[statusText];
+
+    const currentTime = new Date().toISOString();
+
+    if (machineId) {
+        // Editar máquina existente
+        const machineIndex = machinesData.findIndex(m => m.id === parseInt(machineId) && !m.is_deleted);
+        if (machineIndex === -1) {
+            showAlert('Error', 'No se encontró la máquina para editar.', 'error');
+            return;
+        }
+        const oldMachine = { ...machinesData[machineIndex] };
+        machinesData[machineIndex] = {
+            ...machinesData[machineIndex],
+            name,
+            status,
+            location,
+            specs,
+            updated_at: currentTime
+        };
+        auditLogsData.push({
+            id: auditLogsData.length + 1,
+            table_name: 'machines',
+            record_id: machineId,
+            action: 'update',
+            changes: {
+                name: oldMachine.name !== name ? { old: oldMachine.name, new: name } : null,
+                status: oldMachine.status !== status ? { old: oldMachine.status, new: status } : null,
+                location: oldMachine.location !== location ? { old: oldMachine.location, new: location } : null,
+                specs: oldMachine.specs !== specs ? { old: oldMachine.specs, new: specs } : null
+            },
+            created_at: currentTime
+        });
+        showAlert('Éxito', 'Máquina actualizada correctamente.', 'success');
+    } else {
+        // Crear nueva máquina
+        const newId = machinesData.length > 0 ? Math.max(...machinesData.map(m => m.id)) + 1 : 1;
+        machinesData.push({
+            id: newId,
+            name,
+            status,
+            location,
+            specs,
+            start_time: null,
+            time_used: 0,
+            paid: false,
+            faults: { cpu: false, monitor: false, keyboard: false, mouse: false },
+            created_at: currentTime,
+            updated_at: currentTime,
+            is_deleted: false
+        });
+        auditLogsData.push({
+            id: auditLogsData.length + 1,
+            table_name: 'machines',
+            record_id: newId,
+            action: 'insert',
+            changes: { name, status, location, specs },
+            created_at: currentTime
+        });
+        showAlert('Éxito', 'Máquina agregada correctamente.', 'success');
+    }
+
+    bootstrap.Modal.getInstance(document.getElementById('machineModal')).hide();
+    loadTable(true);
+    loadTable(false);
+}
+
+function deleteMachine(machineId) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'La máquina será eliminada y aparecerá en la pestaña de Máquinas Inactivas.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar',
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-danger me-2',
+            cancelButton: 'btn btn-light'
+        }
+    }).then(result => {
+        if (result.isConfirmed) {
+            const machineIndex = machinesData.findIndex(m => m.id === machineId && !m.is_deleted);
+            if (machineIndex === -1) {
+                showAlert('Error', 'No se encontró la máquina para eliminar.', 'error');
+                return;
+            }
+            if (machinesData[machineIndex].status === 'active') {
+                showAlert('Error', 'No se puede eliminar una máquina ocupada.', 'error');
+                return;
+            }
+            machinesData[machineIndex].is_deleted = true;
+            machinesData[machineIndex].updated_at = new Date().toISOString();
+            auditLogsData.push({
+                id: auditLogsData.length + 1,
+                table_name: 'machines',
+                record_id: machineId,
+                action: 'delete',
+                changes: { is_deleted: true },
+                created_at: new Date().toISOString()
+            });
+            showAlert('Éxito', 'Máquina eliminada correctamente. Ahora aparece en Máquinas Inactivas.', 'success');
+            loadTable(true);
+            loadTable(false);
+        }
+    });
+}
+
+function restoreMachine(machineId) {
+    Swal.fire({
+        title: '¿Restaurar máquina?',
+        text: 'La máquina será restaurada y aparecerá en la pestaña correspondiente según su estado.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Restaurar',
+        cancelButtonText: 'Cancelar',
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-success me-2',
+            cancelButton: 'btn btn-light'
+        }
+    }).then(result => {
+        if (result.isConfirmed) {
+            const machineIndex = machinesData.findIndex(m => m.id === machineId && m.is_deleted);
+            if (machineIndex === -1) {
+                showAlert('Error', 'No se encontró la máquina para restaurar.', 'error');
+                return;
+            }
+            machinesData[machineIndex].is_deleted = false;
+            machinesData[machineIndex].updated_at = new Date().toISOString();
+            auditLogsData.push({
+                id: auditLogsData.length + 1,
+                table_name: 'machines',
+                record_id: machineId,
+                action: 'restore',
+                changes: { is_deleted: false },
+                created_at: new Date().toISOString()
+            });
+            const machine = machinesData[machineIndex];
+            const destinationTab = machine.status === 'inactive' ? 'Máquinas Activas' : 'Máquinas Inactivas';
+            showAlert('Éxito', `Máquina restaurada correctamente. Ahora aparece en ${destinationTab}.`, 'success');
+            loadTable(true);
+            loadTable(false);
+        }
+    });
+}
+
+// ========== FUNCIONES DE UTILIDAD ==========
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar-wrapper');
+    const content = document.getElementById('content');
+    sidebar.classList.toggle('active');
+    content.classList.toggle('collapsed');
+}
+
+function formatDateTime(date) {
+    return `${date.toLocaleDateString('es-ES')} ${date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+}
+
+function getStatusText(status) {
+    switch (status) {
+        case 'active': return 'Ocupada';
+        case 'inactive': return 'Disponible';
+        case 'maintenance': return 'En Mantenimiento';
+        default: return 'Desconocido';
+    }
+}
+
+function getStatusBadge(status) {
+    switch (status) {
+        case 'active': return '<span class="badge bg-success">Ocupada</span>';
+        case 'inactive': return '<span class="badge bg-primary">Disponible</span>';
+        case 'maintenance': return '<span class="badge bg-warning">En Mantenimiento</span>';
+        default: return '<span class="badge bg-secondary">Desconocido</span>';
+    }
+}
+
+function showAlert(title, message, type) {
+    Swal.fire({
+        title: title,
+        text: message,
+        icon: type,
+        confirmButtonText: 'Aceptar',
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-primary',
+            popup: 'animated fadeIn'
+        }
+    });
+}
+
+// ========== INICIALIZACIÓN DE LA APLICACIÓN ==========
+document.addEventListener('DOMContentLoaded', () => {
+    initMachinesPage();
+});
+
+
+    </script>
 </body>
 </html>

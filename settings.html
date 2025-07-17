@@ -5,15 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Netbox | Configuración</title>
   <link rel="icon" href="assets/logocabinas.jpg" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
   <style>
     :root {
       --primary: #2563eb;
+      --light-bg: #f9fbff;
+      --card-radius: 1.2rem;
+      --shadow-sm: 0 2px 16px rgba(60, 72, 100, 0.08);
+      --transition-normal: 0.3s ease-in-out;
     }
 
     body {
       background: linear-gradient(120deg, #f0f4ff 0%, #f8fafc 100%);
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .sidebar {
@@ -26,7 +32,7 @@
       left: 0;
       padding: 1rem 0;
       z-index: 1000;
-      transition: all 0.3s ease-in-out;
+      transition: all var(--transition-normal);
     }
 
     .sidebar .logo {
@@ -122,7 +128,7 @@
       min-height: 100vh;
       background: transparent;
       padding: 2.5rem 1.5rem 1.5rem 1.5rem;
-      transition: margin-left 0.3s;
+      transition: margin-left var(--transition-normal);
     }
 
     .main-content-container {
@@ -132,29 +138,36 @@
     }
 
     .card {
-      border-radius: 1.2rem !important;
-      box-shadow: 0 2px 16px 0 rgba(60, 72, 100, 0.08);
+      border-radius: var(--card-radius) !important;
+      box-shadow: var(--shadow-sm);
+      border: none;
+      transition: transform var(--transition-normal);
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
     }
 
     .card-header {
       font-size: 1.1rem;
       font-weight: 700;
-      border-top-left-radius: 1.2rem !important;
-      border-top-right-radius: 1.2rem !important;
+      border-top-left-radius: var(--card-radius) !important;
+      border-top-right-radius: var(--card-radius) !important;
     }
 
     .card-body.bg-light {
-      background: #f9fbff !important;
+      background: var(--light-bg) !important;
     }
 
     .form-label {
       font-weight: 600;
+      color: #1f2937;
     }
 
     .btn {
       font-size: 1.05rem;
       border-radius: 0.5rem;
-      transition: 0.2s ease-in-out;
+      transition: transform 0.2s ease-in-out;
     }
 
     .btn:hover {
@@ -164,7 +177,6 @@
     @media (max-width: 991px) {
       .sidebar {
         left: -250px;
-        transition: left 0.3s;
       }
 
       .sidebar.active {
@@ -226,7 +238,7 @@
         </div>
       </nav>
       <br />
-      <div class="main-content-container">
+      <div class="main-content-container container">
         <div class="row g-4">
           <div class="col-12 col-lg-6">
             <div class="card border-0 shadow-sm mb-4">
@@ -266,11 +278,11 @@
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Dirección</label>
-                    <input type="text" class="form-control" id="local-address" />
+                    <input type="text" class="form-control" id="local-address" value="Av. Principal 123, Huacho" />
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Teléfono</label>
-                    <input type="text" class="form-control" id="local-phone" />
+                    <input type="text" class="form-control" id="local-phone" value="987654321" />
                   </div>
                   <button type="button" class="btn btn-secondary w-100" onclick="saveLocalSettings()">
                     <i class="fas fa-save me-1"></i>Guardar Cambios
@@ -324,7 +336,246 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+
+
+/**
+ * Sistema de Control de Cabinas - settings.html
+ * Archivo JavaScript principal para la página de configuración
+ * Gestiona tarifas, horarios, datos del local, variables generales y cambio de contraseña del administrador
+ * Registra todas las acciones en auditLogsData para consistencia con otras páginas
+ * Implementa un sidebar funcional y responsivo
+ */
+
+// ========== DATOS LOCALES ==========
+let settingsData = {
+    tariff: {
+        hourly_rate: 2.00,
+        open_time: "08:00",
+        close_time: "22:00"
+    },
+    local: {
+        name: "Netbox Huacho Red",
+        address: "Av. Principal 123, Huacho",
+        phone: "987654321"
+    },
+    general: {
+        min_rental_time: 30,
+        welcome_message: "Bienvenido a Netbox"
+    },
+    security: {
+        admin_password: "hashed_default_password"
+    }
+};
+
+let auditLogsData = [];
+
+// ========== INICIALIZACIÓN DE LA PÁGINA ==========
+function initSettingsPage() {
+    // Cargar valores iniciales en los formularios
+    loadSettings();
+
+    // Configurar evento del botón de toggle del sidebar
+    const toggleBtn = document.getElementById('toggle-btn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleSidebar);
+    }
+}
+
+function loadSettings() {
+    // Tarifas y Horarios
+    document.getElementById('tariff-hour').value = settingsData.tariff.hourly_rate;
+    document.getElementById('open-time').value = settingsData.tariff.open_time;
+    document.getElementById('close-time').value = settingsData.tariff.close_time;
+
+    // Datos del Local
+    document.getElementById('local-name').value = settingsData.local.name;
+    document.getElementById('local-address').value = settingsData.local.address;
+    document.getElementById('local-phone').value = settingsData.local.phone;
+
+    // Variables Generales
+    document.getElementById('min-rental-time').value = settingsData.general.min_rental_time;
+    document.getElementById('welcome-message').value = settingsData.general.welcome_message;
+
+    // Seguridad (no se carga la contraseña por seguridad)
+    document.getElementById('admin-password').value = '';
+}
+
+// ========== FUNCIONES DE GUARDADO ==========
+function saveTariffSettings() {
+    const hourlyRate = parseFloat(document.getElementById('tariff-hour').value);
+    const openTime = document.getElementById('open-time').value;
+    const closeTime = document.getElementById('close-time').value;
+
+    // Validaciones
+    if (!hourlyRate || hourlyRate <= 0) {
+        showAlert('Error', 'La tarifa por hora debe ser mayor a 0.', 'error');
+        return;
+    }
+    if (!openTime || !closeTime) {
+        showAlert('Error', 'Por favor, especifique horarios de apertura y cierre.', 'error');
+        return;
+    }
+    if (openTime >= closeTime) {
+        showAlert('Error', 'El horario de apertura debe ser anterior al de cierre.', 'error');
+        return;
+    }
+
+    // Guardar cambios
+    const oldSettings = { ...settingsData.tariff };
+    settingsData.tariff = { hourly_rate: hourlyRate, open_time: openTime, close_time: closeTime };
+
+    // Registrar en auditoría
+    auditLogsData.push({
+        id: auditLogsData.length + 1,
+        table_name: 'settings',
+        record_id: null,
+        action: 'update_tariff',
+        changes: {
+            hourly_rate: oldSettings.hourly_rate !== hourlyRate ? { old: oldSettings.hourly_rate, new: hourlyRate } : null,
+            open_time: oldSettings.open_time !== openTime ? { old: oldSettings.open_time, new: openTime } : null,
+            close_time: oldSettings.close_time !== closeTime ? { old: oldSettings.close_time, new: closeTime } : null
+        },
+        created_at: new Date().toISOString()
+    });
+
+    showAlert('Éxito', 'Configuración de tarifas y horarios actualizada correctamente.', 'success');
+}
+
+function saveLocalSettings() {
+    const name = document.getElementById('local-name').value.trim();
+    const address = document.getElementById('local-address').value.trim();
+    const phone = document.getElementById('local-phone').value.trim();
+
+    // Validaciones
+    if (!name || !address || !phone) {
+        showAlert('Error', 'Por favor, complete todos los campos de datos del local.', 'error');
+        return;
+    }
+    const phoneRegex = /^\d{9}$/;
+    if (!phoneRegex.test(phone)) {
+        showAlert('Error', 'El teléfono debe tener 9 dígitos numéricos.', 'error');
+        return;
+    }
+
+    // Guardar cambios
+    const oldSettings = { ...settingsData.local };
+    settingsData.local = { name, address, phone };
+
+    // Registrar en auditoría
+    auditLogsData.push({
+        id: auditLogsData.length + 1,
+        table_name: 'settings',
+        record_id: null,
+        action: 'update_local',
+        changes: {
+            name: oldSettings.name !== name ? { old: oldSettings.name, new: name } : null,
+            address: oldSettings.address !== address ? { old: oldSettings.address, new: address } : null,
+            phone: oldSettings.phone !== phone ? { old: oldSettings.phone, new: phone } : null
+        },
+        created_at: new Date().toISOString()
+    });
+
+    showAlert('Éxito', 'Datos del local actualizados correctamente.', 'success');
+}
+
+function saveGeneralSettings() {
+    const minRentalTime = parseInt(document.getElementById('min-rental-time').value);
+    const welcomeMessage = document.getElementById('welcome-message').value.trim();
+
+    // Validaciones
+    if (!minRentalTime || minRentalTime < 1) {
+        showAlert('Error', 'El tiempo mínimo de alquiler debe ser mayor a 0.', 'error');
+        return;
+    }
+    if (!welcomeMessage) {
+        showAlert('Error', 'El mensaje de bienvenida no puede estar vacío.', 'error');
+        return;
+    }
+
+    // Guardar cambios
+    const oldSettings = { ...settingsData.general };
+    settingsData.general = { min_rental_time: minRentalTime, welcome_message: welcomeMessage };
+
+    // Registrar en auditoría
+    auditLogsData.push({
+        id: auditLogsData.length + 1,
+        table_name: 'settings',
+        record_id: null,
+        action: 'update_general',
+        changes: {
+            min_rental_time: oldSettings.min_rental_time !== minRentalTime ? { old: oldSettings.min_rental_time, new: minRentalTime } : null,
+            welcome_message: oldSettings.welcome_message !== welcomeMessage ? { old: oldSettings.welcome_message, new: welcomeMessage } : null
+        },
+        created_at: new Date().toISOString()
+    });
+
+    showAlert('Éxito', 'Configuración general actualizada correctamente.', 'success');
+}
+
+function changeAdminPassword() {
+    const password = document.getElementById('admin-password').value.trim();
+
+    // Validaciones
+    if (!password) {
+        showAlert('Error', 'La nueva contraseña no puede estar vacía.', 'error');
+        return;
+    }
+    if (password.length < 8) {
+        showAlert('Error', 'La contraseña debe tener al menos 8 caracteres.', 'error');
+        return;
+    }
+
+    // Guardar cambios (simulando hash)
+    const oldPassword = settingsData.security.admin_password;
+    settingsData.security.admin_password = `hashed_${password}`;
+
+    // Registrar en auditoría
+    auditLogsData.push({
+        id: auditLogsData.length + 1,
+        table_name: 'settings',
+        record_id: null,
+        action: 'update_security',
+        changes: { admin_password: { old: '********', new: '********' } },
+        created_at: new Date().toISOString()
+    });
+
+    // Limpiar campo de contraseña
+    document.getElementById('admin-password').value = '';
+
+    showAlert('Éxito', 'Contraseña de administrador actualizada correctamente.', 'success');
+}
+
+// ========== FUNCIONES DE UTILIDAD ==========
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar-wrapper');
+    const content = document.getElementById('page-content-wrapper');
+    sidebar.classList.toggle('active');
+    content.classList.toggle('collapsed');
+}
+
+function showAlert(title, message, type) {
+    Swal.fire({
+        title: title,
+        text: message,
+        icon: type,
+        confirmButtonText: 'Aceptar',
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-primary',
+            popup: 'animated fadeIn'
+        }
+    });
+}
+
+// ========== INICIALIZACIÓN DE LA APLICACIÓN ==========
+document.addEventListener('DOMContentLoaded', () => {
+    initSettingsPage();
+});
+
+
+  </script>
 </body>
 </html>
