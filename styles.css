@@ -1005,3 +1005,40 @@ body.login-page {
         font-size: 0.98rem;
     }
 }
+
+/* Tabla de historial minimalista y profesional */
+#rentals-table {
+    border-radius: 1rem;
+    overflow: hidden;
+    background: #fff;
+    font-size: 0.97rem;
+}
+#rentals-table thead th {
+    background: #f3f6fa;
+    font-weight: 700;
+    border-bottom: 2px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+#rentals-table tbody tr {
+    transition: background 0.2s;
+}
+#rentals-table tbody tr:hover {
+    background: #f0f4ff;
+}
+#rentals-table td, #rentals-table th {
+    vertical-align: middle;
+    border: none;
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+}
+@media (max-width: 768px) {
+    #rentals-table {
+        font-size: 0.93rem;
+    }
+    #rentals-table th, #rentals-table td {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}

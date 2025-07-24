@@ -344,7 +344,7 @@
                                 <table class="table table-hover align-middle" id="rentals-table">
                                     <thead class="table-light">
                                         <tr>
-                                            <th class="ps-4">ID</th>
+                                            <!-- <th class="ps-4">ID</th> --> <!-- Eliminado visualmente -->
                                             <th>Cliente</th>
                                             <th>Cabina</th>
                                             <th>Inicio</th>
@@ -725,7 +725,7 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
             }
         },
         columns: [
-            { data: 'id' },
+            // { data: 'id' }, // Eliminado
             { data: 'client_name' },
             { data: 'machine_name' },
             { data: 'start_time' },
@@ -735,7 +735,7 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
             { data: 'amount' },
             { data: 'actions', orderable: false, searchable: false }
         ],
-        order: [[0, 'desc']],
+        order: [[2, 'desc']], // Ordena por inicio
         pageLength: 10
     });
 }
@@ -1366,11 +1366,15 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
             title: 'Filtrar Alquileres',
             html: `
                 <div class="mb-3">
-                    <label for="filter-date" class="form-label">Fecha</label>
-                    <input type="date" class="form-control" id="filter-date">
+                    <label class="form-label">Desde</label>
+                    <input type="date" class="form-control" id="filter-date-from">
                 </div>
                 <div class="mb-3">
-                    <label for="filter-status" class="form-label">Estado</label>
+                    <label class="form-label">Hasta</label>
+                    <input type="date" class="form-control" id="filter-date-to">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Estado</label>
                     <select class="form-select" id="filter-status">
                         <option value="">Todos</option>
                         <option value="active">Activo</option>
@@ -1391,17 +1395,26 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
             }
         }).then(async (result) => {
             if (result.isConfirmed) {
-                const filterDate = document.getElementById('filter-date').value;
+                const from = document.getElementById('filter-date-from').value;
+                const to = document.getElementById('filter-date-to').value;
                 const filterStatus = document.getElementById('filter-status').value;
                 const table = $('#rentals-table').DataTable();
                 table.clear();
+
                 let query = supabase.from('rentals').select('*, users(name), machines(name)').eq('is_deleted', false);
-                if (filterDate) {
-                    const selectedDate = new Date(filterDate);
-                    selectedDate.setHours(0, 0, 0, 0);
-                    query = query.gte('start_time', selectedDate.toISOString()).lte('start_time', new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000).toISOString());
+
+                if (from) {
+                    const fromDate = new Date(from);
+                    fromDate.setHours(0, 0, 0, 0);
+                    query = query.gte('start_time', fromDate.toISOString());
+                }
+                if (to) {
+                    const toDate = new Date(to);
+                    toDate.setHours(23, 59, 59, 999);
+                    query = query.lte('start_time', toDate.toISOString());
                 }
                 if (filterStatus) query = query.eq('status', filterStatus);
+
                 const { data: rentals, error: rentalsError } = await query;
                 if (rentalsError) {
                     log(`Error al filtrar alquileres: ${rentalsError.message}`);
@@ -1416,7 +1429,7 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
                     const timeUsed = rental.status === 'active' ? Math.floor((new Date() - startTime) / (1000 * 60)) : rental.time_used || 0;
                     const statusBadge = getStatusBadge(rental.status);
                     table.row.add({
-                        id: rental.id,
+                        // id: rental.id, // Eliminado
                         client_name: clientName,
                         machine_name: machineName,
                         start_time: formatTime(startTime),
