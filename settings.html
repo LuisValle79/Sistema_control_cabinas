@@ -4,228 +4,200 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Netbox | Configuración</title>
+  <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="assets/logocabinas.jpg" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #2563eb;
-      --light-bg: #f9fbff;
-      --card-radius: 1.2rem;
-      --shadow-sm: 0 2px 16px rgba(60, 72, 100, 0.08);
-      --transition-normal: 0.3s ease-in-out;
-    }
+<style>
+        #sidebar-wrapper {
+            width: 250px;
+            background-color: var(--primary);
+            color: white;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            padding: 1rem 0;
+            transition: var(--transition-normal);
+            z-index: 1000;
+        }
 
-    body {
-      background: linear-gradient(120deg, #f0f4ff 0%, #f8fafc 100%);
-      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+        #page-content-wrapper {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 1rem;
+            transition: var(--transition-normal);
+        }
 
-    .sidebar {
-      width: 250px;
-      background-color: var(--primary);
-      color: white;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      padding: 1rem 0;
-      z-index: 1000;
-      transition: all var(--transition-normal);
-    }
+        .navbar {
+            width: calc(100% - 20px);
+            margin-left: auto;
+        }
 
-    .sidebar .logo {
-      padding: 25px 20px;
-      text-align: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      margin-bottom: 10px;
-      background: rgba(0, 0, 0, 0.1);
-    }
+        .navbar .container-fluid {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
 
-    .sidebar .logo img {
-      width: 100%;
-      max-width: none;
-      height: auto;
-      display: block;
-      object-fit: contain;
-    }
-
-    .nav-section {
-      padding: 0 1rem;
-      margin-top: 1.5rem;
-    }
-
-    .nav-section-title {
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      font-weight: bold;
-      opacity: 0.6;
-      margin-bottom: 0.5rem;
-    }
-
-    .nav-link {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1.5rem;
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      transition: background 0.2s ease-in-out;
-      border-radius: 0.4rem;
-    }
-
-    .nav-link:hover,
-    .nav-link.active {
-      background-color: rgba(255, 255, 255, 0.15);
-      border-left: 4px solid #fff;
-    }
-
-    .user-info {
-      position: absolute;
-      bottom: 20px;
-      left: 0;
-      width: 100%;
-      padding: 1rem 1.5rem;
-      background: rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .user-avatar {
-      background-color: #fff;
-      color: var(--primary);
-      width: 40px;
-      height: 40px;
-      font-weight: bold;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-    }
-
-    .user-details {
-      line-height: 1.2;
-    }
-
-    .user-name {
-      font-weight: bold;
-      font-size: 0.95rem;
-    }
-
-    .user-role {
-      font-size: 0.8rem;
-      opacity: 0.8;
-    }
-
-    #page-content-wrapper {
-      margin-left: 250px;
-      width: calc(100% - 250px);
-      min-height: 100vh;
-      background: transparent;
-      padding: 2.5rem 1.5rem 1.5rem 1.5rem;
-      transition: margin-left var(--transition-normal);
-    }
-
-    .main-content-container {
-      width: 100%;
-      max-width: none;
-      margin: 0;
-    }
-
-    .card {
-      border-radius: var(--card-radius) !important;
-      box-shadow: var(--shadow-sm);
-      border: none;
-      transition: transform var(--transition-normal);
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-    }
-
-    .card-header {
-      font-size: 1.1rem;
-      font-weight: 700;
-      border-top-left-radius: var(--card-radius) !important;
-      border-top-right-radius: var(--card-radius) !important;
-    }
-
-    .card-body.bg-light {
-      background: var(--light-bg) !important;
-    }
-
-    .form-label {
-      font-weight: 600;
-      color: #1f2937;
-    }
-
-    .btn {
-      font-size: 1.05rem;
-      border-radius: 0.5rem;
-      transition: transform 0.2s ease-in-out;
-    }
-
-    .btn:hover {
-      transform: scale(1.02);
-    }
-
-    @media (max-width: 991px) {
-      .sidebar {
-        left: -250px;
-      }
-
-      .sidebar.active {
-        left: 0;
-      }
-
-      #page-content-wrapper {
-        margin-left: 0;
-        width: 100%;
-        padding: 1rem 0.75rem;
-      }
-
-      .main-content-container {
-        padding: 0;
-      }
-    }
-  </style>
+        @media (max-width: 768px) {
+            #sidebar-wrapper {
+                transform: translateX(-100%);
+            }
+            #sidebar-wrapper.active {
+                transform: translateX(0);
+            }
+            #page-content-wrapper {
+                margin-left: 0;
+                width: 100%;
+            }
+            .navbar {
+                width: 100%;
+            }
+        }
+        /* Estilos para las estadísticas */
+        .rental-stats {
+            background-color: var(--white);
+            border-radius: var(--border-radius-md);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-normal);
+        }
+        
+        .rental-stats:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+        
+        .rental-stats .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-normal);
+        }
+        
+        .rental-stats .icon i {
+            font-size: 1.5rem;
+            transition: var(--transition-normal);
+        }
+        
+        .rental-stats:hover .icon {
+            transform: scale(1.1);
+        }
+        
+        .rental-stats h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--text-color);
+        }
+        
+        .rental-stats .badge {
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        
+        .rounded-pill {
+            border-radius: 50rem;
+        }
+        
+        /* Estilos para las tarjetas de máquinas */
+        .machine-card {
+            transition: var(--transition-normal);
+            border: none;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        
+        .machine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .machine-card .card-header {
+            border-radius: var(--border-radius-md) var(--border-radius-md) 0 0 !important;
+            background: var(--card-header-gradient);
+            color: var(--white);
+            padding: 1rem 1.25rem;
+        }
+        
+        .machine-card .card-header .badge {
+            padding: 0.5rem 0.75rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: 50rem;
+        }
+        
+        .machine-card .card-body {
+            padding: 1.25rem;
+        }
+        
+        .machine-card .card-footer {
+            background-color: rgba(0,0,0,0.02);
+            padding: 1rem 1.25rem;
+        }
+    </style>
 </head>
 <body>
-  <div class="d-flex" id="wrapper">
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar-wrapper">
-      <div class="logo">
-        <img src="assets/logocabinas.jpg" alt="Logo" />
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Principal</div>
-        <a href="pagina1.html" class="nav-link"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
-        <a href="machines.html" class="nav-link"><i class="fas fa-desktop"></i><span>Cabinas</span></a>
-        <a href="rentals.html" class="nav-link"><i class="fas fa-clock"></i><span>Alquileres</span></a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Administración</div>
-        <a href="users.html" class="nav-link"><i class="fas fa-users"></i><span>Usuarios</span></a>
-        <a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i><span>Reportes</span></a>
-        <a href="settings.html" class="nav-link active"><i class="fas fa-cog"></i><span>Configuración</span></a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Cuenta</div>
-        <a href="index.html" class="nav-link"><i class="fas fa-sign-out-alt"></i><span>Cerrar Sesión</span></a>
-      </div>
-      <div class="user-info">
-        <div class="user-avatar">A</div>
-        <div class="user-details">
-          <div class="user-name">Admin</div>
-          <div class="user-role">Administrador</div>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar-wrapper">
+            <div class="logo">
+                <img src="assets/logocabinas.jpg" alt="Logo" />
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Principal</div>
+                <a href="pagina1.html" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="machines.html" class="nav-link">
+                    <i class="fas fa-desktop"></i>
+                    <span>Cabinas</span>
+                </a>
+                <a href="rentals.html" class="nav-link">
+                    <i class="fas fa-clock"></i>
+                    <span>Alquileres</span>
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Administración</div>
+                <a href="users.html" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="reports.html" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reportes</span>
+                </a>
+                <a href="settings.html" class="nav-link active">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </div>
+             
+             <div class="nav-section">
+                <div class="nav-section-title">Cuenta</div>
+                <a href="index.html" class="nav-link" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+             </div>
+             
+             <div class="user-info">
+                 <div class="user-avatar">A</div>
+                 <div class="user-details">
+                     <div class="user-name">Admin</div>
+                     <div class="user-role">Administrador</div>
+                 </div>
+             </div>
+            </div>
         </div>
-      </div>
-    </div>
 
     <!-- Page content -->
     <div id="page-content-wrapper">

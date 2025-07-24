@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Alquileres - Sistema de Cabinas</title>
     <!-- Bootstrap CSS -->
@@ -16,53 +16,51 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
     <style>
-
         #sidebar-wrapper {
-    width: 250px;
-    background-color: var(--primary);
-    color: white;
-    position: fixed; /* Cambiado de posición relativa a fija para que no interfiera con el contenido */
-    top: 0;
-    bottom: 0;
-    left: 0;
-    padding: 1rem 0;
-    transition: var(--transition-normal);
-    z-index: 1000; /* Asegurar que el sidebar esté por encima solo cuando sea necesario */
-}
+            width: 250px;
+            background-color: var(--primary);
+            color: white;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            padding: 1rem 0;
+            transition: var(--transition-normal);
+            z-index: 1000;
+        }
 
-#page-content-wrapper {
-    margin-left: 250px; /* Añadido para desplazar el contenido principal después del sidebar */
-    width: calc(100% - 250px); /* Ajuste del ancho para que ocupe el espacio restante */
-    padding: 1rem;
-    transition: var(--transition-normal);
-}
+        #page-content-wrapper {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 1rem;
+            transition: var(--transition-normal);
+        }
 
-/* Ajuste para el encabezado de Control de Alquileres */
-.navbar {
-    width: calc(100% - 20px); /* Ajustar el ancho para que coincida con el contenido principal */
-    margin-left: auto; /* Alinear a la derecha para evitar sobreposición con el sidebar */
-}
+        .navbar {
+            width: calc(100% - 20px);
+            margin-left: auto;
+        }
 
-.navbar .container-fluid {
-    padding-left: 1.5rem; /* Añadir un poco más de espacio a la izquierda */
-    padding-right: 1.5rem; /* Añadir un poco más de espacio a la derecha */
-}
+        .navbar .container-fluid {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
 
-@media (max-width: 768px) {
-    #sidebar-wrapper {
-        transform: translateX(-100%); /* Ocultar el sidebar en móviles por defecto */
-    }
-    #sidebar-wrapper.active {
-        transform: translateX(0); /* Mostrar el sidebar cuando se active */
-    }
-    #page-content-wrapper {
-        margin-left: 0; /* Quitar margen en móviles para que ocupe todo el ancho */
-        width: 100%; /* Ajustar el ancho al 100% en móviles */
-    }
-    .navbar {
-        width: 100%; /* En móviles, la barra de navegación ocupa todo el ancho */
-    }
-}
+        @media (max-width: 768px) {
+            #sidebar-wrapper {
+                transform: translateX(-100%);
+            }
+            #sidebar-wrapper.active {
+                transform: translateX(0);
+            }
+            #page-content-wrapper {
+                margin-left: 0;
+                width: 100%;
+            }
+            .navbar {
+                width: 100%;
+            }
+        }
         /* Estilos para las estadísticas */
         .rental-stats {
             background-color: var(--white);
@@ -246,7 +244,7 @@
             </nav>
             
             <script>
-                // Mostrar la fecha actual en formato: Lunes, 15 de Enero de 2023
+                // Mostrar la fecha actual en formato: Viernes, 18 de Julio de 2025
                 document.addEventListener('DOMContentLoaded', function() {
                     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                     const today = new Date();
@@ -590,13 +588,34 @@
                                     </div>
                                 </div>
                                 
-                                <div class="mb-0">
+                                <div class="mb-3">
                                     <label for="finish-change" class="form-label fw-medium">Cambio (S/)</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-white border-end-0">
                                             <i class="fas fa-coins text-success"></i>
                                         </span>
                                         <input type="text" class="form-control border-start-0" id="finish-change" readonly>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="payment-method" class="form-label fw-medium">Método de Pago</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-end-0">
+                                            <i class="fas fa-credit-card text-success"></i>
+                                        </span>
+                                        <select class="form-select border-start-0" id="payment-method" required>
+                                            <option value="" disabled selected>Seleccione un método</option>
+                                            <option value="efectivo">
+                                                <i class="fas fa-money-bill-wave me-2 text-warning"></i>Efectivo
+                                            </option>
+                                            <option value="yape">
+                                                <i class="fab fa-yelp me-2 text-info"></i>Yape
+                                            </option>
+                                            <option value="debiendo">
+                                                <i class="fas fa-exclamation-triangle me-2 text-danger"></i>Queda Debiendo
+                                            </option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -615,889 +634,910 @@
         </div>
     </div>
     
-    <!-- Bootstrap Bundle with Popper -->
+<!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
-    <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
-    <!-- Custom JS -->
-    <script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+<script>
+    // Inicializar el cliente Supabase
+    const { createClient } = window.supabase;
+    const supabaseUrl = 'https://jbirpporhcxssduqwvge.supabase.co'; // Tu Project URL
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiaXJwcG9yaGN4c3NkdXF3dmdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNzYzNTEsImV4cCI6MjA2ODc1MjM1MX0.5rvXuuYdA95MsRAtpfiT-7R8SxdHh0sOm4ZsxvjeMUg'; // Tu anon key
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-/**
- * Sistema de Control de Cabinas - rentals.html
- * Archivo JavaScript principal para la página de alquileres
- * Gestiona las funcionalidades de alquileres, transferencias y estadísticas
- */
-
-// ========== DATOS LOCALES ==========
-let machinesData = [
-    { id: 1, name: "Cabina 1", status: "inactive", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", is_deleted: false },
-    { id: 2, name: "Cabina 2", status: "inactive", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", is_deleted: false },
-    { id: 3, name: "Cabina 3", status: "inactive", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", is_deleted: false },
-    { id: 4, name: "Cabina 4", status: "inactive", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", is_deleted: false },
-    { id: 5, name: "Cabina 5", status: "inactive", start_time: null, time_used: 0, paid: false, faults: {cpu: false, monitor: false, keyboard: false, mouse: false}, created_at: "2025-07-13 05:58:06.89838", is_deleted: false }
-];
-
-let usersData = [
-    { id: 1, name: "Administrador", email: "admin@example.com", phone: "123456789", role: "Administrador", password: "admin123", created_at: "2025-07-13 05:58:06.89838", is_deleted: false },
-    { id: 2, name: "Empleado", email: "empleado@example.com", phone: "987654321", role: "Empleado", password: "empleado123", created_at: "2025-07-13 05:58:06.89838", is_deleted: false },
-    { id: 3, name: "Cliente 1", email: "cliente1@example.com", phone: "555555555", role: "Cliente", password: "cliente123", created_at: "2025-07-13 05:58:06.89838", is_deleted: false },
-    { id: 4, name: "Cliente 2", email: "cliente2@example.com", phone: "555555556", role: "Cliente", password: "cliente123", created_at: "2025-07-13 05:58:06.89838", is_deleted: false },
-    { id: 5, name: "Cliente Inactivo", email: "inactivo@example.com", phone: "555555557", role: "Cliente", password: "cliente123", created_at: "2025-07-13 05:58:06.89838", is_deleted: true }
-];
-
-let rentalsData = [];
-let auditLogsData = [];
-
-// ========== INICIALIZACIÓN DE LA PÁGINA ==========
-function initRentalsPage() {
-    // Inicializar componentes
-    loadActiveMachines();
-    loadRentalsHistory();
-    loadClientsForRental();
-    loadAvailableMachines();
-    updateRentalStats();
-    startRentalTimers();
-
-    // Configurar eventos
-    const toggleBtn = document.getElementById('toggle-btn');
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', toggleSidebar);
+    // Función de depuración
+    function log(message) {
+        console.log(`[${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}] ${message}`);
     }
 
-    const rentalTime = document.getElementById('rental-time');
-    if (rentalTime) {
-        rentalTime.addEventListener('input', calculateRentalAmount);
-    }
-
-    const rentalRate = document.getElementById('rental-rate');
-    if (rentalRate) {
-        rentalRate.addEventListener('input', calculateRentalAmount);
-    }
-
-    const finishPayment = document.getElementById('finish-payment');
-    if (finishPayment) {
-        finishPayment.addEventListener('input', calculateChange);
-    }
-
-    const rentalForm = document.getElementById('rental-form');
-    if (rentalForm) {
-        rentalForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            startRental();
+    // Función para mostrar alertas
+    function showAlert(title, message, type) {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: type,
+            confirmButtonText: 'Aceptar',
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn btn-primary',
+                popup: 'animated fadeIn'
+            }
         });
     }
 
-    const transferForm = document.getElementById('transfer-form');
-    if (transferForm) {
-        transferForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            transferRental();
-        });
-    }
-
-    const finishForm = document.getElementById('finish-rental-form');
-    if (finishForm) {
-        finishForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            completeRental();
-        });
-    }
-
-    // Inicializar DataTable
-    if (typeof $ !== 'undefined' && $.fn.DataTable) {
-        $('#rentals-table').DataTable({
-            responsive: true,
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-            },
-            columns: [
-                { data: 'id' },
-                { data: 'client_name' },
-                { data: 'machine_name' },
-                { data: 'start_time' },
-                { data: 'end_time' },
-                { data: 'time_used' },
-                { data: 'status' },
-                { data: 'amount' },
-                { data: 'actions', orderable: false, searchable: false }
-            ],
-            order: [[0, 'desc']],
-            pageLength: 10
-        });
-    }
-
-    // Configurar botones de filtrado y exportación
-    document.querySelector('.btn-outline-primary i.fa-filter').parentElement.addEventListener('click', filterRentals);
-    document.querySelector('.btn-outline-primary i.fa-download').parentElement.addEventListener('click', exportRentals);
-}
-
-// ========== FUNCIONES DE CARGA DE DATOS ==========
-function loadActiveMachines() {
-    const container = document.getElementById('active-machines-container');
-    if (!container) return;
-    container.innerHTML = '';
-    const activeMachines = machinesData.filter(machine => !machine.is_deleted && machine.status === 'active');
-    if (activeMachines.length === 0) {
-        container.innerHTML = `
-            <div class="col-12 text-center py-5">
-                <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No hay cabinas en uso actualmente</h5>
-            </div>`;
-        return;
-    }
-    activeMachines.forEach(machine => {
-        const activeRental = rentalsData.find(rental => rental.machine_id === machine.id && rental.status === 'active');
-        if (!activeRental) return;
-        const client = usersData.find(user => user.id === activeRental.client_id);
-        const clientName = client ? client.name : 'Cliente desconocido';
-        const clientInitial = clientName.charAt(0).toUpperCase();
-        const startTime = new Date(activeRental.start_time);
-        const currentTime = new Date();
-        const elapsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
-        const remainingMinutes = Math.max(0, activeRental.total_time - elapsedMinutes);
-        const percentUsed = Math.min(100, Math.round((elapsedMinutes / activeRental.total_time) * 100));
-        const statusClass = percentUsed > 90 ? 'danger' : percentUsed > 75 ? 'warning' : '';
-        const machineCard = document.createElement('div');
-        machineCard.className = `col-md-4 col-lg-3 mb-4`;
-        machineCard.innerHTML = `
-            <div class="card h-100 machine-card ${statusClass}" id="machine-card-${machine.id}">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0">${machine.name}</h6>
-                    <span class="badge ${percentUsed > 75 ? 'bg-danger' : 'bg-success'}">${remainingMinutes} min</span>
-                </div>
-                <div class="card-body">
-                    <div class="client-info d-flex align-items-center mb-3">
-                        <div class="client-avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
-                            ${clientInitial}
-                        </div>
-                        <div>
-                            <h6 class="mb-0">${clientName}</h6>
-                            <small class="text-muted">Cliente</small>
-                        </div>
-                    </div>
-                    <div class="time-info d-flex justify-content-between mb-3">
-                        <div class="time-item text-center">
-                            <div class="time-value">${formatTime(startTime)}</div>
-                            <small>Inicio</small>
-                        </div>
-                        <div class="time-item text-center">
-                            <div class="time-value">${elapsedMinutes}</div>
-                            <small>Minutos usados</small>
-                        </div>
-                        <div class="time-item text-center">
-                            <div class="time-value">${activeRental.total_time}</div>
-                            <small>Total minutos</small>
-                        </div>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar ${percentUsed > 75 ? 'bg-danger' : 'bg-success'}" role="progressbar" style="width: ${percentUsed}%" aria-valuenow="${percentUsed}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <p class="text-center mt-2 small">${elapsedMinutes} min de ${activeRental.total_time} min (${percentUsed}%)</p>
-                </div>
-                <div class="card-footer d-flex justify-content-between">
-                    <button class="btn btn-sm btn-outline-primary" onclick="openTransferModal(${activeRental.id})">
-                        <i class="fas fa-exchange-alt me-1"></i>Transferir
-                    </button>
-                    <button class="btn btn-sm btn-outline-success" onclick="openFinishRentalModal(${activeRental.id})">
-                        <i class="fas fa-check-circle me-1"></i>Finalizar
-                    </button>
-                </div>
-            </div>`;
-        container.appendChild(machineCard);
-    });
-}
-
-function loadRentalsHistory() {
-    const tableBody = document.getElementById('rentals-table-body');
-    if (!tableBody) return;
-    tableBody.innerHTML = '';
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayRentals = rentalsData.filter(rental => {
-        const rentalDate = new Date(rental.start_time);
-        rentalDate.setHours(0, 0, 0, 0);
-        return rentalDate.getTime() === today.getTime();
-    });
-    if (todayRentals.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="9" class="text-center">No hay registros de alquileres para hoy</td></tr>`;
-        updateRentalStats();
-        return;
-    }
-    todayRentals.sort((a, b) => b.id - a.id);
-    const table = $('#rentals-table').DataTable();
-    table.clear();
-    todayRentals.forEach(rental => {
-        const client = usersData.find(user => user.id === rental.client_id);
-        const machine = machinesData.find(m => m.id === rental.machine_id);
-        const clientName = client ? client.name : 'Cliente desconocido';
-        const machineName = machine ? machine.name : 'Cabina desconocida';
-        const startTime = new Date(rental.start_time);
-        const endTime = rental.end_time ? new Date(rental.end_time) : null;
-        const timeUsed = rental.status === 'active' ? Math.floor((new Date() - startTime) / (1000 * 60)) : rental.time_used;
-        const statusBadge = getStatusBadge(rental.status);
-        const rowData = {
-            id: rental.id,
-            client_name: clientName,
-            machine_name: machineName,
-            start_time: formatTime(startTime),
-            end_time: endTime ? formatTime(endTime) : '-',
-            time_used: `${timeUsed} min`,
-            status: statusBadge,
-            amount: `S/ ${rental.amount.toFixed(2)}`,
-            actions: rental.status === 'active' ? `
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="openTransferModal(${rental.id})" title="Transferir"><i class="fas fa-exchange-alt"></i></button>
-                <button class="btn btn-sm btn-outline-success" onclick="openFinishRentalModal(${rental.id})" title="Finalizar"><i class="fas fa-check-circle"></i></button>
-            ` : `
-                <button class="btn btn-sm btn-outline-secondary" onclick="viewRentalDetails(${rental.id})" title="Ver detalles"><i class="fas fa-eye"></i></button>
-            `
-        };
-        table.row.add(rowData);
-    });
-    table.draw();
-    updateRentalStats();
-}
-
-function loadClientsForRental() {
-    const clientSelect = document.getElementById('client-select');
-    if (!clientSelect) return;
-    clientSelect.innerHTML = '<option value="" selected disabled>Seleccione un cliente</option>';
-    const clients = usersData.filter(user => user.role === 'Cliente' && !user.is_deleted);
-    clients.forEach(client => {
-        const option = document.createElement('option');
-        option.value = client.id;
-        option.textContent = client.name;
-        clientSelect.appendChild(option);
-    });
-}
-
-function loadAvailableMachines() {
-    const machineSelect = document.getElementById('machine-select');
-    if (!machineSelect) return;
-    machineSelect.innerHTML = '<option value="" selected disabled>Seleccione una cabina</option>';
-    const availableMachines = machinesData.filter(machine => !machine.is_deleted && machine.status === 'inactive');
-    availableMachines.forEach(machine => {
-        const option = document.createElement('option');
-        option.value = machine.id;
-        option.textContent = machine.name;
-        machineSelect.appendChild(option);
-    });
-}
-
-function updateRentalStats() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const activeRentals = rentalsData.filter(r => r.status === 'active').length;
-    const completedRentals = rentalsData.filter(r => {
-        const rentalDate = new Date(r.start_time);
-        rentalDate.setHours(0, 0, 0, 0);
-        return r.status === 'completed' && rentalDate.getTime() === today.getTime();
-    }).length;
-    const todayIncome = rentalsData
-        .filter(r => {
-            const rentalDate = new Date(r.start_time);
-            rentalDate.setHours(0, 0, 0, 0);
-            return r.status === 'completed' && rentalDate.getTime() === today.getTime();
-        })
-        .reduce((sum, r) => sum + r.amount, 0);
-
-    document.getElementById('active-rentals-count').textContent = activeRentals;
-    document.getElementById('completed-rentals-count').textContent = completedRentals;
-    document.getElementById('today-income').textContent = `S/ ${todayIncome.toFixed(2)}`;
-}
-
-// ========== FUNCIONES DE ALQUILER ==========
-function openNewRentalModal() {
-    document.getElementById('rental-form').reset();
-    document.getElementById('rental-time').value = '60';
-    document.getElementById('rental-rate').value = '2.00';
-    document.getElementById('rental-amount').value = '2.00';
-    loadClientsForRental();
-    loadAvailableMachines();
-    new bootstrap.Modal(document.getElementById('rentalModal')).show();
-}
-
-function calculateRentalAmount() {
-    const time = parseFloat(document.getElementById('rental-time').value) || 0;
-    const rate = parseFloat(document.getElementById('rental-rate').value) || 0;
-    const amount = (time / 60) * rate;
-    const amountField = document.getElementById('rental-amount');
-    if (amountField) {
-        amountField.value = amount.toFixed(2);
-    }
-    return amount;
-}
-
-function startRental() {
-    const clientId = parseInt(document.getElementById('client-select').value);
-    const machineId = parseInt(document.getElementById('machine-select').value);
-    const time = parseInt(document.getElementById('rental-time').value);
-    const rate = parseFloat(document.getElementById('rental-rate').value);
-    const notes = document.getElementById('rental-notes').value.trim();
-    if (!clientId || !machineId || !time || !rate) {
-        showAlert('Error', 'Por favor, complete todos los campos requeridos.', 'error');
-        return;
-    }
-    const machine = machinesData.find(m => m.id === machineId);
-    if (!machine || machine.status === 'active') {
-        showAlert('Error', 'La cabina seleccionada no está disponible.', 'error');
-        loadAvailableMachines();
-        return;
-    }
-    const amount = (time / 60) * rate;
-    const newId = rentalsData.length > 0 ? Math.max(...rentalsData.map(rental => rental.id)) + 1 : 1;
-    const newRental = {
-        id: newId,
-        client_id: clientId,
-        machine_id: machineId,
-        start_time: new Date().toISOString(),
-        end_time: null,
-        total_time: time,
-        time_used: 0,
-        rate: rate,
-        amount: amount,
-        status: 'active',
-        notes: notes,
-        payment_received: 0,
-        created_at: new Date().toISOString()
-    };
-    rentalsData.push(newRental);
-    const machineIndex = machinesData.findIndex(m => m.id === machineId);
-    if (machineIndex !== -1) {
-        machinesData[machineIndex].status = 'active';
-        machinesData[machineIndex].start_time = new Date().toISOString();
-    }
-    auditLogsData.push({
-        id: auditLogsData.length + 1,
-        table_name: 'rentals',
-        record_id: newId,
-        action: 'insert',
-        changes: { client_id: clientId, machine_id: machineId, total_time: time, amount: amount },
-        created_at: new Date().toISOString()
-    });
-    bootstrap.Modal.getInstance(document.getElementById('rentalModal')).hide();
-    showAlert('Éxito', 'Alquiler iniciado correctamente.', 'success');
-    loadActiveMachines();
-    loadRentalsHistory();
-    loadAvailableMachines();
-}
-
-function openTransferModal(rentalId) {
-    const rental = rentalsData.find(r => r.id === rentalId && r.status === 'active');
-    if (!rental) {
-        showAlert('Error', 'No se encontró el alquiler activo.', 'error');
-        return;
-    }
-    const sourceMachine = machinesData.find(m => m.id === rental.machine_id);
-    if (!sourceMachine) {
-        showAlert('Error', 'No se encontró la máquina de origen.', 'error');
-        return;
-    }
-    const startTime = new Date(rental.start_time);
-    const currentTime = new Date();
-    const elapsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
-    const remainingMinutes = Math.max(0, rental.total_time - elapsedMinutes);
-    document.getElementById('source-rental-id').value = rental.id;
-    document.getElementById('source-machine').value = sourceMachine.name;
-    document.getElementById('remaining-time').value = `${remainingMinutes} minutos`;
-    const targetMachineSelect = document.getElementById('target-machine');
-    targetMachineSelect.innerHTML = '<option value="" selected disabled>Seleccione una cabina disponible</option>';
-    const availableMachines = machinesData.filter(machine => !machine.is_deleted && machine.status === 'inactive' && machine.id !== sourceMachine.id);
-    availableMachines.forEach(machine => {
-        const option = document.createElement('option');
-        option.value = machine.id;
-        option.textContent = machine.name;
-        targetMachineSelect.appendChild(option);
-    });
-    new bootstrap.Modal(document.getElementById('transferModal')).show();
-}
-
-function transferRental() {
-    const rentalId = parseInt(document.getElementById('source-rental-id').value);
-    const targetMachineId = parseInt(document.getElementById('target-machine').value);
-    if (!rentalId || !targetMachineId) {
-        showAlert('Error', 'Por favor, seleccione una máquina de destino.', 'error');
-        return;
-    }
-    const rentalIndex = rentalsData.findIndex(r => r.id === rentalId && r.status === 'active');
-    if (rentalIndex === -1) {
-        showAlert('Error', 'No se encontró el alquiler activo.', 'error');
-        return;
-    }
-    const sourceRental = rentalsData[rentalIndex];
-    const sourceMachineId = sourceRental.machine_id;
-    const startTime = new Date(sourceRental.start_time);
-    const currentTime = new Date();
-    const elapsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
-    const remainingMinutes = Math.max(0, sourceRental.total_time - elapsedMinutes);
-    if (remainingMinutes <= 0) {
-        showAlert('Error', 'No hay tiempo restante para transferir.', 'error');
-        return;
-    }
-    const targetMachine = machinesData.find(m => m.id === targetMachineId && m.status === 'inactive');
-    if (!targetMachine) {
-        showAlert('Error', 'La máquina de destino no está disponible.', 'error');
-        return;
-    }
-    rentalsData[rentalIndex].end_time = currentTime.toISOString();
-    rentalsData[rentalIndex].time_used = elapsedMinutes;
-    rentalsData[rentalIndex].status = 'transferred';
-    const sourceMachineIndex = machinesData.findIndex(m => m.id === sourceMachineId);
-    if (sourceMachineIndex !== -1) {
-        machinesData[sourceMachineIndex].status = 'inactive';
-        machinesData[sourceMachineIndex].start_time = null;
-    }
-    const newRentalId = rentalsData.length > 0 ? Math.max(...rentalsData.map(rental => rental.id)) + 1 : 1;
-    const newRental = {
-        id: newRentalId,
-        client_id: sourceRental.client_id,
-        machine_id: targetMachineId,
-        start_time: currentTime.toISOString(),
-        end_time: null,
-        total_time: remainingMinutes,
-        time_used: 0,
-        rate: sourceRental.rate,
-        amount: (remainingMinutes / 60) * sourceRental.rate,
-        status: 'active',
-        notes: `Transferido desde ${sourceMachineId} (Alquiler #${rentalId})`,
-        payment_received: 0,
-        created_at: currentTime.toISOString(),
-        transferred_from: rentalId
-    };
-    rentalsData.push(newRental);
-    const targetMachineIndex = machinesData.findIndex(m => m.id === targetMachineId);
-    if (targetMachineIndex !== -1) {
-        machinesData[targetMachineIndex].status = 'active';
-        machinesData[targetMachineIndex].start_time = currentTime.toISOString();
-    }
-    auditLogsData.push({
-        id: auditLogsData.length + 1,
-        table_name: 'rentals',
-        record_id: newRentalId,
-        action: 'transfer',
-        changes: { source_rental_id: rentalId, target_machine_id: targetMachineId, remaining_minutes: remainingMinutes },
-        created_at: currentTime.toISOString()
-    });
-    bootstrap.Modal.getInstance(document.getElementById('transferModal')).hide();
-    showAlert('Éxito', 'Tiempo transferido correctamente.', 'success');
-    loadActiveMachines();
-    loadRentalsHistory();
-    loadAvailableMachines();
-}
-
-function openFinishRentalModal(rentalId) {
-    const rental = rentalsData.find(r => r.id === rentalId && r.status === 'active');
-    if (!rental) {
-        showAlert('Error', 'No se encontró el alquiler activo.', 'error');
-        return;
-    }
-    const client = usersData.find(user => user.id === rental.client_id);
-    const machine = machinesData.find(m => m.id === rental.machine_id);
-    if (!client || !machine) {
-        showAlert('Error', 'No se encontró la información completa del alquiler.', 'error');
-        return;
-    }
-    const startTime = new Date(rental.start_time);
-    const currentTime = new Date();
-    const timeUsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
-    const amount = (timeUsedMinutes / 60) * rental.rate;
-    document.getElementById('finish-rental-id').value = rental.id;
-    document.getElementById('finish-client').value = client.name;
-    document.getElementById('finish-machine').value = machine.name;
-    document.getElementById('finish-time-used').value = `${timeUsedMinutes} minutos`;
-    document.getElementById('finish-amount').value = amount.toFixed(2);
-    document.getElementById('finish-payment').value = amount.toFixed(2);
-    document.getElementById('finish-change').value = '0.00';
-    new bootstrap.Modal(document.getElementById('finishRentalModal')).show();
-}
-
-function calculateChange() {
-    const amount = parseFloat(document.getElementById('finish-amount').value) || 0;
-    const payment = parseFloat(document.getElementById('finish-payment').value) || 0;
-    const change = Math.max(0, payment - amount);
-    document.getElementById('finish-change').value = change.toFixed(2);
-}
-
-function completeRental() {
-    const rentalId = parseInt(document.getElementById('finish-rental-id').value);
-    const payment = parseFloat(document.getElementById('finish-payment').value);
-    const amount = parseFloat(document.getElementById('finish-amount').value);
-    if (!rentalId || isNaN(payment)) {
-        showAlert('Error', 'Por favor, ingrese el monto recibido.', 'error');
-        return;
-    }
-    if (payment < amount) {
-        showAlert('Error', 'El pago recibido es menor que el monto a pagar.', 'error');
-        return;
-    }
-    const rentalIndex = rentalsData.findIndex(r => r.id === rentalId && r.status === 'active');
-    if (rentalIndex === -1) {
-        showAlert('Error', 'No se encontró el alquiler activo.', 'error');
-        return;
-    }
-    const rental = rentalsData[rentalIndex];
-    const machineId = rental.machine_id;
-    const startTime = new Date(rental.start_time);
-    const currentTime = new Date();
-    const timeUsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
-    rentalsData[rentalIndex].end_time = currentTime.toISOString();
-    rentalsData[rentalIndex].time_used = timeUsedMinutes;
-    rentalsData[rentalIndex].amount = amount;
-    rentalsData[rentalIndex].payment_received = payment;
-    rentalsData[rentalIndex].status = 'completed';
-    const machineIndex = machinesData.findIndex(m => m.id === machineId);
-    if (machineIndex !== -1) {
-        machinesData[machineIndex].status = 'inactive';
-        machinesData[machineIndex].start_time = null;
-    }
-    auditLogsData.push({
-        id: auditLogsData.length + 1,
-        table_name: 'rentals',
-        record_id: rentalId,
-        action: 'complete',
-        changes: { time_used: timeUsedMinutes, amount: amount, payment_received: payment },
-        created_at: currentTime.toISOString()
-    });
-    bootstrap.Modal.getInstance(document.getElementById('finishRentalModal')).hide();
-    showAlert('Éxito', 'Alquiler finalizado correctamente.', 'success');
-    loadActiveMachines();
-    loadRentalsHistory();
-    loadAvailableMachines();
-}
-
-function viewRentalDetails(rentalId) {
-    const rental = rentalsData.find(r => r.id === rentalId);
-    if (!rental) {
-        showAlert('Error', 'No se encontró el alquiler.', 'error');
-        return;
-    }
-    const client = usersData.find(user => user.id === rental.client_id);
-    const machine = machinesData.find(m => m.id === rental.machine_id);
-    const clientName = client ? client.name : 'Cliente desconocido';
-    const machineName = machine ? machine.name : 'Cabina desconocida';
-    const startTime = new Date(rental.start_time);
-    const endTime = rental.end_time ? new Date(rental.end_time) : null;
-    let content = `
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <tr><th>ID de Alquiler:</th><td>${rental.id}</td></tr>
-                <tr><th>Cliente:</th><td>${clientName}</td></tr>
-                <tr><th>Cabina:</th><td>${machineName}</td></tr>
-                <tr><th>Hora de Inicio:</th><td>${formatDateTime(startTime)}</td></tr>
-                <tr><th>Hora de Fin:</th><td>${endTime ? formatDateTime(endTime) : '-'}</td></tr>
-                <tr><th>Tiempo Total:</th><td>${rental.total_time} minutos</td></tr>
-                <tr><th>Tiempo Usado:</th><td>${rental.time_used} minutos</td></tr>
-                <tr><th>Tarifa:</th><td>S/ ${rental.rate.toFixed(2)} por hora</td></tr>
-                <tr><th>Monto:</th><td>S/ ${rental.amount.toFixed(2)}</td></tr>
-                <tr><th>Pago Recibido:</th><td>S/ ${rental.payment_received ? rental.payment_received.toFixed(2) : '0.00'}</td></tr>
-                <tr><th>Estado:</th><td>${getStatusText(rental.status)}</td></tr>
-            </table>
-        </div>
-    `;
-    if (rental.status === 'transferred' && rental.transferred_to) {
-        const targetRental = rentalsData.find(r => r.id === rental.transferred_to);
-        if (targetRental) {
-            const targetMachine = machinesData.find(m => m.id === targetRental.machine_id);
-            content += `
-                <div class="alert alert-info mt-3">
-                    <strong>Transferido a:</strong> ${targetMachine ? targetMachine.name : 'Cabina desconocida'} (Alquiler #${targetRental.id})
-                </div>
-            `;
+    // Inicialización de la página
+    async function initRentalsPage() {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session) {
+            log('No hay sesión activa: ' + (sessionError ? sessionError.message : 'Sin sesión'));
+            showAlert('Sesión expirada', 'Debes iniciar sesión como administrador.', 'warning').then(() => {
+                window.location.href = 'index.html';
+            });
+            return;
         }
-    }
-    if (rental.notes) {
-        content += `
-            <div class="mt-3">
-                <strong>Notas:</strong>
-                <p>${rental.notes}</p>
-            </div>
-        `;
-    }
-    Swal.fire({
-        title: 'Detalles del Alquiler',
-        html: content,
-        icon: 'info',
-        confirmButtonText: 'Cerrar',
-        buttonsStyling: false,
-        customClass: {
-            confirmButton: 'btn btn-primary',
-            popup: 'animated fadeIn'
+        log(`Sesión activa. User ID: ${session.user.id}`);
+
+        // Configurar eventos y cargar datos
+        const toggleBtn = document.getElementById('toggle-btn');
+        if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+
+        const rentalTime = document.getElementById('rental-time');
+        if (rentalTime) rentalTime.addEventListener('input', calculateRentalAmount);
+
+        const rentalRate = document.getElementById('rental-rate');
+        if (rentalRate) rentalRate.addEventListener('input', calculateRentalAmount);
+
+        const finishPayment = document.getElementById('finish-payment');
+        if (finishPayment) finishPayment.addEventListener('input', calculateChange);
+
+// Inicializar DataTable
+if (typeof $ !== 'undefined' && $.fn.DataTable) {
+    $('#rentals-table').DataTable({
+        responsive: true,
+        language: {
+            "decimal": "",
+            "emptyTable": "No hay datos disponibles en la tabla",
+            "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+            "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+            "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "Mostrar _MENU_ entradas",
+            "loadingRecords": "Cargando...",
+            "processing": "Procesando...",
+            "search": "Buscar:",
+            "zeroRecords": "No se encontraron registros coincidentes",
+            "paginate": {
+                "first": "Primero",
+                "last": "Último",
+                "next": "Siguiente",
+                "previous": "Anterior"
+            },
+            "aria": {
+                "sortAscending": ": activar para ordenar la columna de manera ascendente",
+                "sortDescending": ": activar para ordenar la columna de manera descendente"
+            }
         },
-        width: '600px'
+        columns: [
+            { data: 'id' },
+            { data: 'client_name' },
+            { data: 'machine_name' },
+            { data: 'start_time' },
+            { data: 'end_time' },
+            { data: 'time_used' },
+            { data: 'status' },
+            { data: 'amount' },
+            { data: 'actions', orderable: false, searchable: false }
+        ],
+        order: [[0, 'desc']],
+        pageLength: 10
     });
 }
 
-function startRentalTimers() {
-    setInterval(() => {
-        const activeRentals = rentalsData.filter(r => r.status === 'active');
-        activeRentals.forEach(rental => {
-            const machine = machinesData.find(m => m.id === rental.machine_id);
-            if (!machine) return;
+        // Configurar botones
+        document.querySelector('.btn-outline-primary i.fa-filter').parentElement.addEventListener('click', filterRentals);
+        document.querySelector('.btn-outline-primary i.fa-download').parentElement.addEventListener('click', exportRentals);
+
+        // Cargar datos iniciales
+        await loadActiveMachines();
+        await loadRentalsHistory();
+        await loadClientsForRental();
+        await loadAvailableMachines();
+        startRentalTimers();
+    }
+
+    // Cargar máquinas activas
+    async function loadActiveMachines() {
+        const container = document.getElementById('active-machines-container');
+        if (!container) return;
+        container.innerHTML = '';
+        const { data: machines, error: machinesError } = await supabase
+            .from('machines')
+            .select('*')
+            .eq('is_deleted', false)
+            .eq('status', 'active');
+        if (machinesError) {
+            log(`Error al cargar máquinas: ${machinesError.message}`);
+            showAlert('Error', 'No se pudieron cargar las cabinas activas.', 'error');
+            return;
+        }
+        if (machines.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No hay cabinas en uso actualmente</h5>
+                </div>`;
+            return;
+        }
+        for (const machine of machines) {
+            const { data: rental, error: rentalError } = await supabase
+                .from('rentals')
+                .select('*, users(name)')
+                .eq('machine_id', machine.id)
+                .eq('status', 'active')
+                .single();
+            if (rentalError || !rental) continue;
+            const clientName = rental.users.name || 'Cliente desconocido';
+            const clientInitial = clientName.charAt(0).toUpperCase();
             const startTime = new Date(rental.start_time);
             const currentTime = new Date();
             const elapsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
             const remainingMinutes = Math.max(0, rental.total_time - elapsedMinutes);
             const percentUsed = Math.min(100, Math.round((elapsedMinutes / rental.total_time) * 100));
-            const machineCard = document.getElementById(`machine-card-${machine.id}`);
-            if (machineCard) {
-                const timeBadge = machineCard.querySelector('.badge');
-                const progressBar = machineCard.querySelector('.progress-bar');
-                const progressText = machineCard.querySelector('.small');
-                const timeUsedElement = machineCard.querySelector('.time-item:nth-child(2) .time-value');
-                timeBadge.textContent = `${remainingMinutes} min`;
-                timeBadge.className = `badge ${percentUsed > 75 ? 'bg-danger' : 'bg-success'}`;
-                progressBar.style.width = `${percentUsed}%`;
-                progressBar.className = `progress-bar ${percentUsed > 75 ? 'bg-danger' : 'bg-success'}`;
-                progressText.textContent = `${elapsedMinutes} min de ${rental.total_time} min (${percentUsed}%)`;
-                timeUsedElement.textContent = elapsedMinutes;
-                machineCard.className = `card h-100 machine-card ${percentUsed > 90 ? 'danger' : percentUsed > 75 ? 'warning' : ''}`;
-                if (remainingMinutes <= 0 && rental.status === 'active') {
-                    finalizeRentalOnTimeEnd(rental.id);
-                }
-            }
-        });
-        loadRentalsHistory();
-    }, 60000); // Actualiza cada minuto
-}
-
-function finalizeRentalOnTimeEnd(rentalId) {
-    const rentalIndex = rentalsData.findIndex(r => r.id === rentalId && r.status === 'active');
-    if (rentalIndex === -1) return;
-    const rental = rentalsData[rentalIndex];
-    const machineIndex = machinesData.findIndex(m => m.id === rental.machine_id);
-    if (machineIndex === -1) return;
-    const startTime = new Date(rental.start_time);
-    const currentTime = new Date();
-    const timeUsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
-    const amount = (timeUsedMinutes / 60) * rental.rate;
-    rentalsData[rentalIndex].end_time = currentTime.toISOString();
-    rentalsData[rentalIndex].time_used = timeUsedMinutes;
-    rentalsData[rentalIndex].amount = amount;
-    rentalsData[rentalIndex].status = 'completed';
-    rentalsData[rentalIndex].payment_received = amount;
-    machinesData[machineIndex].status = 'inactive';
-    machinesData[machineIndex].start_time = null;
-    auditLogsData.push({
-        id: auditLogsData.length + 1,
-        table_name: 'rentals',
-        record_id: rentalId,
-        action: 'auto_complete',
-        changes: { time_used: timeUsedMinutes, amount: amount, status: 'completed' },
-        created_at: currentTime.toISOString()
-    });
-    showAlert('Atención', `El alquiler #${rentalId} ha finalizado automáticamente por agotamiento de tiempo.`, 'info');
-    loadActiveMachines();
-    loadRentalsHistory();
-    loadAvailableMachines();
-}
-
-// ========== FUNCIONES DE FILTRADO Y EXPORTACIÓN ==========
-function filterRentals() {
-    Swal.fire({
-        title: 'Filtrar Alquileres',
-        html: `
-            <div class="mb-3">
-                <label for="filter-date" class="form-label">Fecha</label>
-                <input type="date" class="form-control" id="filter-date">
-            </div>
-            <div class="mb-3">
-                <label for="filter-status" class="form-label">Estado</label>
-                <select class="form-select" id="filter-status">
-                    <option value="">Todos</option>
-                    <option value="active">Activo</option>
-                    <option value="completed">Completado</option>
-                    <option value="transferred">Transferido</option>
-                    <option value="cancelled">Cancelado</option>
-                </select>
-            </div>
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'Aplicar',
-        cancelButtonText: 'Cancelar',
-        buttonsStyling: false,
-        customClass: {
-            confirmButton: 'btn btn-primary me-2',
-            cancelButton: 'btn btn-light'
+            const statusClass = percentUsed > 90 ? 'danger' : percentUsed > 75 ? 'warning' : '';
+            const machineCard = document.createElement('div');
+            machineCard.className = `col-md-4 col-lg-3 mb-4`;
+            machineCard.innerHTML = `
+                <div class="card h-100 machine-card ${statusClass}" id="machine-card-${machine.id}">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">${machine.name}</h6>
+                        <span class="badge ${percentUsed > 75 ? 'bg-danger' : 'bg-success'}">${remainingMinutes} min</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="client-info d-flex align-items-center mb-3">
+                            <div class="client-avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                ${clientInitial}
+                            </div>
+                            <div>
+                                <h6 class="mb-0">${clientName}</h6>
+                                <small class="text-muted">Cliente</small>
+                            </div>
+                        </div>
+                        <div class="time-info d-flex justify-content-between mb-3">
+                            <div class="time-item text-center">
+                                <div class="time-value">${formatTime(startTime)}</div>
+                                <small>Inicio</small>
+                            </div>
+                            <div class="time-item text-center">
+                                <div class="time-value">${elapsedMinutes}</div>
+                                <small>Minutos usados</small>
+                            </div>
+                            <div class="time-item text-center">
+                                <div class="time-value">${rental.total_time}</div>
+                                <small>Total minutos</small>
+                            </div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar ${percentUsed > 75 ? 'bg-danger' : 'bg-success'}" role="progressbar" style="width: ${percentUsed}%" aria-valuenow="${percentUsed}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <p class="text-center mt-2 small">${elapsedMinutes} min de ${rental.total_time} min (${percentUsed}%)</p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <button class="btn btn-sm btn-outline-primary" onclick="openTransferModal('${rental.id}')">
+                            <i class="fas fa-exchange-alt me-1"></i>Transferir
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="openFinishRentalModal('${rental.id}')">
+                            <i class="fas fa-check-circle me-1"></i>Finalizar
+                        </button>
+                    </div>
+                </div>`;
+            container.appendChild(machineCard);
         }
-    }).then(result => {
-        if (result.isConfirmed) {
-            const filterDate = document.getElementById('filter-date').value;
-            const filterStatus = document.getElementById('filter-status').value;
-            const table = $('#rentals-table').DataTable();
-            table.clear();
-            let filteredRentals = rentalsData;
-            if (filterDate) {
-                const selectedDate = new Date(filterDate);
-                selectedDate.setHours(0, 0, 0, 0);
-                filteredRentals = filteredRentals.filter(rental => {
-                    const rentalDate = new Date(rental.start_time);
-                    rentalDate.setHours(0, 0, 0, 0);
-                    return rentalDate.getTime() === selectedDate.getTime();
-                });
-            }
-            if (filterStatus) {
-                filteredRentals = filteredRentals.filter(rental => rental.status === filterStatus);
-            }
-            filteredRentals.sort((a, b) => b.id - a.id);
-            filteredRentals.forEach(rental => {
-                const client = usersData.find(user => user.id === rental.client_id);
-                const machine = machinesData.find(m => m.id === rental.machine_id);
-                const clientName = client ? client.name : 'Cliente desconocido';
-                const machineName = machine ? machine.name : 'Cabina desconocida';
-                const startTime = new Date(rental.start_time);
-                const endTime = rental.end_time ? new Date(rental.end_time) : null;
-                const timeUsed = rental.status === 'active' ? Math.floor((new Date() - startTime) / (1000 * 60)) : rental.time_used;
-                const statusBadge = getStatusBadge(rental.status);
-                table.row.add({
-                    id: rental.id,
-                    client_name: clientName,
-                    machine_name: machineName,
-                    start_time: formatTime(startTime),
-                    end_time: endTime ? formatTime(endTime) : '-',
-                    time_used: `${timeUsed} min`,
-                    status: statusBadge,
-                    amount: `S/ ${rental.amount.toFixed(2)}`,
-                    actions: rental.status === 'active' ? `
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="openTransferModal(${rental.id})" title="Transferir"><i class="fas fa-exchange-alt"></i></button>
-                        <button class="btn btn-sm btn-outline-success" onclick="openFinishRentalModal(${rental.id})" title="Finalizar"><i class="fas fa-check-circle"></i></button>
-                    ` : `
-                        <button class="btn btn-sm btn-outline-secondary" onclick="viewRentalDetails(${rental.id})" title="Ver detalles"><i class="fas fa-eye"></i></button>
-                    `
-                });
+    }
+
+    // Cargar historial de alquileres
+    async function loadRentalsHistory() {
+        const table = $('#rentals-table').DataTable();
+        table.clear();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const { data: rentals, error: rentalsError } = await supabase
+            .from('rentals')
+            .select('*, users(name), machines(name)')
+            .eq('is_deleted', false)
+            .gte('start_time', today.toISOString());
+        if (rentalsError) {
+            log(`Error al cargar alquileres: ${rentalsError.message}`);
+            showAlert('Error', 'No se pudieron cargar los alquileres.', 'error');
+            return;
+        }
+        rentals.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
+        rentals.forEach(rental => {
+            const clientName = rental.users.name || 'Cliente desconocido';
+            const machineName = rental.machines.name || 'Cabina desconocida';
+            const startTime = new Date(rental.start_time);
+            const endTime = rental.end_time ? new Date(rental.end_time) : null;
+            const timeUsed = rental.status === 'active' ? Math.floor((new Date() - startTime) / (1000 * 60)) : rental.time_used || 0;
+            const statusBadge = getStatusBadge(rental.status);
+            table.row.add({
+                id: rental.id,
+                client_name: clientName,
+                machine_name: machineName,
+                start_time: formatTime(startTime),
+                end_time: endTime ? formatTime(endTime) : '-',
+                time_used: `${timeUsed} min`,
+                status: statusBadge,
+                amount: `S/ ${rental.amount.toFixed(2)}`,
+                actions: rental.status === 'active' ? `
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="openTransferModal('${rental.id}')" title="Transferir"><i class="fas fa-exchange-alt"></i></button>
+                    <button class="btn btn-sm btn-outline-success" onclick="openFinishRentalModal('${rental.id}')" title="Finalizar"><i class="fas fa-check-circle"></i></button>
+                ` : `
+                    <button class="btn btn-sm btn-outline-secondary" onclick="viewRentalDetails('${rental.id}')" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                `
             });
-            table.draw();
-            showAlert('Éxito', 'Filtros aplicados correctamente.', 'success');
-        }
-    });
-}
+        });
+        table.draw();
+        updateRentalStats();
+    }
 
-function exportRentals() {
-    Swal.fire({
-        title: 'Exportar Alquileres',
-        html: `
-            <div class="mb-3">
-                <label for="export-format" class="form-label">Formato</label>
-                <select class="form-select" id="export-format">
-                    <option value="csv">CSV</option>
-                    <option value="pdf">PDF</option>
-                </select>
-            </div>
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'Exportar',
-        cancelButtonText: 'Cancelar',
-        buttonsStyling: false,
-        customClass: {
-            confirmButton: 'btn btn-primary me-2',
-            cancelButton: 'btn btn-light'
+    // Cargar clientes para el formulario de alquiler
+    async function loadClientsForRental() {
+        const clientSelect = document.getElementById('client-select');
+        if (!clientSelect) return;
+        clientSelect.innerHTML = '<option value="" selected disabled>Seleccione un cliente</option>';
+        const { data: clients, error: clientsError } = await supabase
+            .from('users')
+            .select('id, name')
+            .eq('role', 'Cliente')
+            .eq('is_deleted', false);
+        if (clientsError) {
+            log(`Error al cargar clientes: ${clientsError.message}`);
+            showAlert('Error', 'No se pudieron cargar los clientes.', 'error');
+            return;
         }
-    }).then(result => {
-        if (result.isConfirmed) {
-            const format = document.getElementById('export-format').value;
-            if (format === 'csv') {
-                exportToCSV();
-            } else if (format === 'pdf') {
-                exportToPDF();
-            }
-        }
-    });
-}
+        clients.forEach(client => {
+            const option = document.createElement('option');
+            option.value = client.id;
+            option.textContent = client.name;
+            clientSelect.appendChild(option);
+        });
+    }
 
-function exportToCSV() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayRentals = rentalsData.filter(rental => {
-        const rentalDate = new Date(rental.start_time);
-        rentalDate.setHours(0, 0, 0, 0);
-        return rentalDate.getTime() === today.getTime();
-    });
-    let csvContent = 'ID,Cliente,Cabina,Inicio,Fin,Tiempo Usado,Estado,Monto\n';
-    todayRentals.forEach(rental => {
-        const client = usersData.find(user => user.id === rental.client_id);
-        const machine = machinesData.find(m => m.id === rental.machine_id);
-        const clientName = client ? client.name : 'Cliente desconocido';
-        const machineName = machine ? machine.name : 'Cabina desconocida';
+    // Cargar máquinas disponibles
+    async function loadAvailableMachines() {
+        const machineSelect = document.getElementById('machine-select');
+        if (!machineSelect) return;
+        machineSelect.innerHTML = '<option value="" selected disabled>Seleccione una cabina</option>';
+        const { data: machines, error: machinesError } = await supabase
+            .from('machines')
+            .select('id, name')
+            .eq('is_deleted', false)
+            .eq('status', 'inactive');
+        if (machinesError) {
+            log(`Error al cargar máquinas: ${machinesError.message}`);
+            showAlert('Error', 'No se pudieron cargar las cabinas.', 'error');
+            return;
+        }
+        machines.forEach(machine => {
+            const option = document.createElement('option');
+            option.value = machine.id;
+            option.textContent = machine.name;
+            machineSelect.appendChild(option);
+        });
+    }
+
+    // Actualizar estadísticas
+    async function updateRentalStats() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const { data: activeRentals, error: activeError } = await supabase
+            .from('rentals')
+            .select('*', { count: 'exact' })
+            .eq('status', 'active')
+            .eq('is_deleted', false);
+        const { data: completedRentals, error: completedError } = await supabase
+            .from('rentals')
+            .select('*', { count: 'exact' })
+            .eq('status', 'completed')
+            .gte('start_time', today.toISOString())
+            .eq('is_deleted', false);
+        const { data: incomeData, error: incomeError } = await supabase
+            .from('rentals')
+            .select('amount')
+            .eq('status', 'completed')
+            .gte('start_time', today.toISOString())
+            .eq('is_deleted', false);
+        if (activeError || completedError || incomeError) {
+            log(`Error al actualizar estadísticas: ${activeError?.message || completedError?.message || incomeError?.message}`);
+            showAlert('Error', 'No se pudieron actualizar las estadísticas.', 'error');
+            return;
+        }
+        const activeCount = activeRentals.length;
+        const completedCount = completedRentals.length;
+        const todayIncome = incomeData.reduce((sum, r) => sum + (r.amount || 0), 0);
+
+        document.getElementById('active-rentals-count').textContent = activeCount;
+        document.getElementById('completed-rentals-count').textContent = completedCount;
+        document.getElementById('today-income').textContent = `S/ ${todayIncome.toFixed(2)}`;
+    }
+
+    // Funciones de alquiler
+    function openNewRentalModal() {
+        document.getElementById('rental-form').reset();
+        document.getElementById('rental-time').value = '60';
+        document.getElementById('rental-rate').value = '2.00';
+        document.getElementById('rental-amount').value = '2.00';
+        loadClientsForRental();
+        loadAvailableMachines();
+        new bootstrap.Modal(document.getElementById('rentalModal')).show();
+    }
+
+    function calculateRentalAmount() {
+        const time = parseFloat(document.getElementById('rental-time').value) || 0;
+        const rate = parseFloat(document.getElementById('rental-rate').value) || 0;
+        const amount = (time / 60) * rate;
+        const amountField = document.getElementById('rental-amount');
+        if (amountField) amountField.value = amount.toFixed(2);
+        return amount;
+    }
+
+    async function startRental() {
+        const clientId = document.getElementById('client-select').value;
+        const machineId = document.getElementById('machine-select').value;
+        const time = parseInt(document.getElementById('rental-time').value);
+        const rate = parseFloat(document.getElementById('rental-rate').value);
+        const notes = document.getElementById('rental-notes').value.trim();
+        if (!clientId || !machineId || !time || !rate) {
+            showAlert('Error', 'Por favor, complete todos los campos requeridos.', 'error');
+            return;
+        }
+        const { data: machine, error: machineError } = await supabase
+            .from('machines')
+            .select('status')
+            .eq('id', machineId)
+            .eq('is_deleted', false)
+            .single();
+        if (machineError || machine.status === 'active') {
+            log(`Error al verificar máquina: ${machineError?.message || 'Máquina no disponible'}`);
+            showAlert('Error', 'La cabina seleccionada no está disponible.', 'error');
+            await loadAvailableMachines();
+            return;
+        }
+        const amount = (time / 60) * rate;
+        const { data, error } = await supabase
+            .from('rentals')
+            .insert({
+                client_id: clientId,
+                machine_id: machineId,
+                start_time: new Date().toISOString(),
+                total_time: time,
+                rate: rate,
+                amount: amount,
+                status: 'active',
+                notes: notes
+            })
+            .select();
+        if (error) {
+            log(`Error al crear alquiler: ${error.message}`);
+            showAlert('Error', 'No se pudo iniciar el alquiler.', 'error');
+            return;
+        }
+        const { error: updateError } = await supabase
+            .from('machines')
+            .update({ status: 'active', start_time: new Date().toISOString() })
+            .eq('id', machineId);
+        if (updateError) {
+            log(`Error al actualizar máquina: ${updateError.message}`);
+            showAlert('Error', 'No se pudo actualizar el estado de la cabina.', 'error');
+            return;
+        }
+        await supabase
+            .from('audit_logs')
+            .insert({
+                table_name: 'rentals',
+                record_id: data[0].id,
+                action: 'insert',
+                changes: { client_id: clientId, machine_id: machineId, total_time: time, amount: amount }
+            });
+        bootstrap.Modal.getInstance(document.getElementById('rentalModal')).hide();
+        showAlert('Éxito', 'Alquiler iniciado correctamente.', 'success');
+        await loadActiveMachines();
+        await loadRentalsHistory();
+        await loadAvailableMachines();
+    }
+
+    async function openTransferModal(rentalId) {
+        const { data: rental, error: rentalError } = await supabase
+            .from('rentals')
+            .select('*, machines(name)')
+            .eq('id', rentalId)
+            .eq('status', 'active')
+            .single();
+        if (rentalError || !rental) {
+            log(`Error al cargar alquiler: ${rentalError?.message || 'No encontrado'}`);
+            showAlert('Error', 'No se encontró el alquiler activo.', 'error');
+            return;
+        }
+        const startTime = new Date(rental.start_time);
+        const currentTime = new Date();
+        const elapsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
+        const remainingMinutes = Math.max(0, rental.total_time - elapsedMinutes);
+        document.getElementById('source-rental-id').value = rental.id;
+        document.getElementById('source-machine').value = rental.machines.name;
+        document.getElementById('remaining-time').value = `${remainingMinutes} minutos`;
+        const targetMachineSelect = document.getElementById('target-machine');
+        targetMachineSelect.innerHTML = '<option value="" selected disabled>Seleccione una cabina disponible</option>';
+        const { data: availableMachines, error: machinesError } = await supabase
+            .from('machines')
+            .select('id, name')
+            .eq('is_deleted', false)
+            .eq('status', 'inactive')
+            .neq('id', rental.machine_id);
+        if (machinesError) {
+            log(`Error al cargar máquinas: ${machinesError.message}`);
+            showAlert('Error', 'No se pudieron cargar las cabinas disponibles.', 'error');
+            return;
+        }
+        availableMachines.forEach(machine => {
+            const option = document.createElement('option');
+            option.value = machine.id;
+            option.textContent = machine.name;
+            targetMachineSelect.appendChild(option);
+        });
+        new bootstrap.Modal(document.getElementById('transferModal')).show();
+    }
+
+    async function transferRental() {
+        const rentalId = document.getElementById('source-rental-id').value;
+        const targetMachineId = document.getElementById('target-machine').value;
+        if (!rentalId || !targetMachineId) {
+            showAlert('Error', 'Por favor, seleccione una máquina de destino.', 'error');
+            return;
+        }
+        const { data: rental, error: rentalError } = await supabase
+            .from('rentals')
+            .select('*')
+            .eq('id', rentalId)
+            .eq('status', 'active')
+            .single();
+        if (rentalError) {
+            log(`Error al cargar alquiler: ${rentalError.message}`);
+            showAlert('Error', 'No se encontró el alquiler activo.', 'error');
+            return;
+        }
+        const startTime = new Date(rental.start_time);
+        const currentTime = new Date();
+        const elapsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
+        const remainingMinutes = Math.max(0, rental.total_time - elapsedMinutes);
+        if (remainingMinutes <= 0) {
+            showAlert('Error', 'No hay tiempo restante para transferir.', 'error');
+            return;
+        }
+        const { data: targetMachine, error: targetError } = await supabase
+            .from('machines')
+            .select('status')
+            .eq('id', targetMachineId)
+            .eq('is_deleted', false)
+            .single();
+        if (targetError || targetMachine.status !== 'inactive') {
+            log(`Error al verificar máquina destino: ${targetError?.message || 'No disponible'}`);
+            showAlert('Error', 'La máquina de destino no está disponible.', 'error');
+            return;
+        }
+        const { error: updateError } = await supabase
+            .from('rentals')
+            .update({
+                end_time: currentTime.toISOString(),
+                time_used: elapsedMinutes,
+                status: 'transferred'
+            })
+            .eq('id', rentalId);
+        if (updateError) {
+            log(`Error al actualizar alquiler: ${updateError.message}`);
+            showAlert('Error', 'No se pudo transferir el alquiler.', 'error');
+            return;
+        }
+        const { data: newRental, error: newError } = await supabase
+            .from('rentals')
+            .insert({
+                client_id: rental.client_id,
+                machine_id: targetMachineId,
+                start_time: currentTime.toISOString(),
+                total_time: remainingMinutes,
+                rate: rental.rate,
+                amount: (remainingMinutes / 60) * rental.rate,
+                status: 'active',
+                notes: `Transferido desde ${rental.machine_id} (Alquiler #${rentalId})`,
+                transferred_from: rentalId
+            })
+            .select();
+        if (newError) {
+            log(`Error al crear nuevo alquiler: ${newError.message}`);
+            showAlert('Error', 'No se pudo crear el nuevo alquiler.', 'error');
+            return;
+        }
+        await supabase
+            .from('machines')
+            .update({ status: 'inactive', start_time: null })
+            .eq('id', rental.machine_id);
+        await supabase
+            .from('machines')
+            .update({ status: 'active', start_time: currentTime.toISOString() })
+            .eq('id', targetMachineId);
+        await supabase
+            .from('audit_logs')
+            .insert({
+                table_name: 'rentals',
+                record_id: newRental[0].id,
+                action: 'transfer',
+                changes: { source_rental_id: rentalId, target_machine_id: targetMachineId, remaining_minutes: remainingMinutes }
+            });
+        bootstrap.Modal.getInstance(document.getElementById('transferModal')).hide();
+        showAlert('Éxito', 'Tiempo transferido correctamente.', 'success');
+        await loadActiveMachines();
+        await loadRentalsHistory();
+        await loadAvailableMachines();
+    }
+
+    async function openFinishRentalModal(rentalId) {
+        const { data: rental, error: rentalError } = await supabase
+            .from('rentals')
+            .select('*, users(name), machines(name)')
+            .eq('id', rentalId)
+            .eq('status', 'active')
+            .single();
+        if (rentalError || !rental) {
+            log(`Error al cargar alquiler: ${rentalError?.message || 'No encontrado'}`);
+            showAlert('Error', 'No se encontró el alquiler activo.', 'error');
+            return;
+        }
+        const startTime = new Date(rental.start_time);
+        const currentTime = new Date();
+        const timeUsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
+        const amount = (timeUsedMinutes / 60) * rental.rate;
+        document.getElementById('finish-rental-id').value = rental.id;
+        document.getElementById('finish-client').value = rental.users.name;
+        document.getElementById('finish-machine').value = rental.machines.name;
+        document.getElementById('finish-time-used').value = `${timeUsedMinutes} minutos`;
+        document.getElementById('finish-amount').value = amount.toFixed(2);
+        document.getElementById('finish-payment').value = amount.toFixed(2);
+        document.getElementById('finish-change').value = '0.00';
+        document.getElementById('payment-method').value = '';
+        new bootstrap.Modal(document.getElementById('finishRentalModal')).show();
+    }
+
+    function calculateChange() {
+        const amount = parseFloat(document.getElementById('finish-amount').value) || 0;
+        const payment = parseFloat(document.getElementById('finish-payment').value) || 0;
+        const change = Math.max(0, payment - amount);
+        document.getElementById('finish-change').value = change.toFixed(2);
+    }
+
+    async function completeRental() {
+        const rentalId = document.getElementById('finish-rental-id').value;
+        const payment = parseFloat(document.getElementById('finish-payment').value);
+        const paymentMethod = document.getElementById('payment-method').value;
+        const amount = parseFloat(document.getElementById('finish-amount').value);
+        if (!rentalId || isNaN(payment) || !paymentMethod) {
+            showAlert('Error', 'Por favor, complete todos los campos requeridos, incluyendo el método de pago.', 'error');
+            return;
+        }
+        if (paymentMethod === 'debiendo' && payment < amount) {
+            showAlert('Error', 'El monto recibido no cubre el total a pagar para dejar debiendo.', 'error');
+            return;
+        }
+        const { data: rental, error: rentalError } = await supabase
+            .from('rentals')
+            .select('machine_id, start_time')
+            .eq('id', rentalId)
+            .eq('status', 'active')
+            .single();
+        if (rentalError) {
+            log(`Error al cargar alquiler: ${rentalError.message}`);
+            showAlert('Error', 'No se encontró el alquiler activo.', 'error');
+            return;
+        }
+        const startTime = new Date(rental.start_time);
+        const currentTime = new Date();
+        const timeUsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
+        const { error: updateError } = await supabase
+            .from('rentals')
+            .update({
+                end_time: currentTime.toISOString(),
+                time_used: timeUsedMinutes,
+                amount: amount,
+                payment_received: payment,
+                status: paymentMethod === 'debiendo' && payment < amount ? 'pending' : 'completed',
+                payment_method: paymentMethod
+            })
+            .eq('id', rentalId);
+        if (updateError) {
+            log(`Error al finalizar alquiler: ${updateError.message}`);
+            showAlert('Error', 'No se pudo finalizar el alquiler.', 'error');
+            return;
+        }
+        const { error: machineError } = await supabase
+            .from('machines')
+            .update({ status: 'inactive', start_time: null })
+            .eq('id', rental.machine_id);
+        if (machineError) {
+            log(`Error al actualizar máquina: ${machineError.message}`);
+            showAlert('Error', 'No se pudo actualizar el estado de la cabina.', 'error');
+            return;
+        }
+        await supabase
+            .from('audit_logs')
+            .insert({
+                table_name: 'rentals',
+                record_id: rentalId,
+                action: 'complete',
+                changes: { time_used: timeUsedMinutes, amount: amount, payment_received: payment, payment_method: paymentMethod, status: paymentMethod === 'debiendo' && payment < amount ? 'pending' : 'completed' }
+            });
+        bootstrap.Modal.getInstance(document.getElementById('finishRentalModal')).hide();
+        showAlert('Éxito', `Alquiler finalizado correctamente. Método de pago: ${getPaymentMethodText(paymentMethod)}.`, 'success');
+        await loadActiveMachines();
+        await loadRentalsHistory();
+        await loadAvailableMachines();
+    }
+
+    async function viewRentalDetails(rentalId) {
+        const { data: rental, error: rentalError } = await supabase
+            .from('rentals')
+            .select('*, users(name), machines(name)')
+            .eq('id', rentalId)
+            .single();
+        if (rentalError) {
+            log(`Error al cargar alquiler: ${rentalError.message}`);
+            showAlert('Error', 'No se encontró el alquiler.', 'error');
+            return;
+        }
+        const clientName = rental.users.name || 'Cliente desconocido';
+        const machineName = rental.machines.name || 'Cabina desconocida';
         const startTime = new Date(rental.start_time);
         const endTime = rental.end_time ? new Date(rental.end_time) : null;
-        const timeUsed = rental.status === 'active' ? Math.floor((new Date() - startTime) / (1000 * 60)) : rental.time_used;
-        csvContent += `${rental.id},${clientName},${machineName},${formatDateTime(startTime)},${endTime ? formatDateTime(endTime) : '-'},${timeUsed} min,${getStatusText(rental.status)},${rental.amount.toFixed(2)}\n`;
-    });
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `alquileres_${today.toISOString().split('T')[0]}.csv`;
-    link.click();
-    showAlert('Éxito', 'Reporte exportado como CSV.', 'success');
-}
-
-function exportToPDF() {
-    showAlert('Info', 'Exportación a PDF no implementada. Integra jsPDF para funcionalidad completa.', 'info');
-}
-
-// ========== FUNCIONES DE UTILIDAD ==========
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar-wrapper');
-    const content = document.getElementById('page-content-wrapper');
-    sidebar.classList.toggle('active');
-    content.classList.toggle('collapsed');
-}
-
-function formatTime(date) {
-    return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-}
-
-function formatDateTime(date) {
-    return `${date.toLocaleDateString('es-ES')} ${date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
-}
-
-function getStatusText(status) {
-    switch (status) {
-        case 'active': return 'Activo';
-        case 'completed': return 'Completado';
-        case 'transferred': return 'Transferido';
-        case 'cancelled': return 'Cancelado';
-        default: return 'Desconocido';
-    }
-}
-
-function getStatusBadge(status) {
-    switch (status) {
-        case 'active': return '<span class="badge bg-success">Activo</span>';
-        case 'completed': return '<span class="badge bg-primary">Completado</span>';
-        case 'transferred': return '<span class="badge bg-info">Transferido</span>';
-        case 'cancelled': return '<span class="badge bg-danger">Cancelado</span>';
-        default: return '<span class="badge bg-secondary">Desconocido</span>';
-    }
-}
-
-function showAlert(title, message, type) {
-    Swal.fire({
-        title: title,
-        text: message,
-        icon: type,
-        confirmButtonText: 'Aceptar',
-        buttonsStyling: false,
-        customClass: {
-            confirmButton: 'btn btn-primary',
-            popup: 'animated fadeIn'
+        let content = `
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tr><th>ID de Alquiler:</th><td>${rental.id}</td></tr>
+                    <tr><th>Cliente:</th><td>${clientName}</td></tr>
+                    <tr><th>Cabina:</th><td>${machineName}</td></tr>
+                    <tr><th>Hora de Inicio:</th><td>${formatDateTime(startTime)}</td></tr>
+                    <tr><th>Hora de Fin:</th><td>${endTime ? formatDateTime(endTime) : '-'}</td></tr>
+                    <tr><th>Tiempo Total:</th><td>${rental.total_time} minutos</td></tr>
+                    <tr><th>Tiempo Usado:</th><td>${rental.time_used} minutos</td></tr>
+                    <tr><th>Tarifa:</th><td>S/ ${rental.rate.toFixed(2)} por hora</td></tr>
+                    <tr><th>Monto:</th><td>S/ ${rental.amount.toFixed(2)}</td></tr>
+                    <tr><th>Pago Recibido:</th><td>S/ ${rental.payment_received ? rental.payment_received.toFixed(2) : '0.00'}</td></tr>
+                    <tr><th>Método de Pago:</th><td>${rental.payment_method ? getPaymentMethodText(rental.payment_method) : 'No especificado'}</td></tr>
+                    <tr><th>Estado:</th><td>${getStatusText(rental.status)}</td></tr>
+                </table>
+            </div>
+        `;
+        if (rental.status === 'transferred' && rental.transferred_from) {
+            const { data: targetRental } = await supabase
+                .from('rentals')
+                .select('machine_id, machines(name)')
+                .eq('id', rental.transferred_from)
+                .single();
+            content += `
+                <div class="alert alert-info mt-3">
+                    <strong>Transferido desde:</strong> ${targetRental?.machines.name || 'Cabina desconocida'} (Alquiler #${rental.transferred_from})
+                </div>
+            `;
         }
-    });
-}
+        if (rental.notes) {
+            content += `
+                <div class="mt-3">
+                    <strong>Notas:</strong>
+                    <p>${rental.notes}</p>
+                </div>
+            `;
+        }
+        Swal.fire({
+            title: 'Detalles del Alquiler',
+            html: content,
+            icon: 'info',
+            confirmButtonText: 'Cerrar',
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn btn-primary',
+                popup: 'animated fadeIn'
+            },
+            width: '600px'
+        });
+    }
 
-// ========== INICIALIZACIÓN DE LA APLICACIÓN ==========
-document.addEventListener('DOMContentLoaded', () => {
-    initRentalsPage();
-});
+    function startRentalTimers() {
+        setInterval(async () => {
+            await loadActiveMachines();
+            await loadRentalsHistory();
+        }, 60000); // Actualiza cada minuto
+    }
 
+    // Funciones de filtrado y exportación
+    async function filterRentals() {
+        Swal.fire({
+            title: 'Filtrar Alquileres',
+            html: `
+                <div class="mb-3">
+                    <label for="filter-date" class="form-label">Fecha</label>
+                    <input type="date" class="form-control" id="filter-date">
+                </div>
+                <div class="mb-3">
+                    <label for="filter-status" class="form-label">Estado</label>
+                    <select class="form-select" id="filter-status">
+                        <option value="">Todos</option>
+                        <option value="active">Activo</option>
+                        <option value="completed">Completado</option>
+                        <option value="transferred">Transferido</option>
+                        <option value="cancelled">Cancelado</option>
+                        <option value="pending">Pendiente</option>
+                    </select>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Aplicar',
+            cancelButtonText: 'Cancelar',
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn btn-primary me-2',
+                cancelButton: 'btn btn-light'
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const filterDate = document.getElementById('filter-date').value;
+                const filterStatus = document.getElementById('filter-status').value;
+                const table = $('#rentals-table').DataTable();
+                table.clear();
+                let query = supabase.from('rentals').select('*, users(name), machines(name)').eq('is_deleted', false);
+                if (filterDate) {
+                    const selectedDate = new Date(filterDate);
+                    selectedDate.setHours(0, 0, 0, 0);
+                    query = query.gte('start_time', selectedDate.toISOString()).lte('start_time', new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000).toISOString());
+                }
+                if (filterStatus) query = query.eq('status', filterStatus);
+                const { data: rentals, error: rentalsError } = await query;
+                if (rentalsError) {
+                    log(`Error al filtrar alquileres: ${rentalsError.message}`);
+                    showAlert('Error', 'No se pudieron aplicar los filtros.', 'error');
+                    return;
+                }
+                rentals.forEach(rental => {
+                    const clientName = rental.users.name || 'Cliente desconocido';
+                    const machineName = rental.machines.name || 'Cabina desconocida';
+                    const startTime = new Date(rental.start_time);
+                    const endTime = rental.end_time ? new Date(rental.end_time) : null;
+                    const timeUsed = rental.status === 'active' ? Math.floor((new Date() - startTime) / (1000 * 60)) : rental.time_used || 0;
+                    const statusBadge = getStatusBadge(rental.status);
+                    table.row.add({
+                        id: rental.id,
+                        client_name: clientName,
+                        machine_name: machineName,
+                        start_time: formatTime(startTime),
+                        end_time: endTime ? formatTime(endTime) : '-',
+                        time_used: `${timeUsed} min`,
+                        status: statusBadge,
+                        amount: `S/ ${rental.amount.toFixed(2)}`,
+                        actions: rental.status === 'active' ? `
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="openTransferModal('${rental.id}')" title="Transferir"><i class="fas fa-exchange-alt"></i></button>
+                            <button class="btn btn-sm btn-outline-success" onclick="openFinishRentalModal('${rental.id}')" title="Finalizar"><i class="fas fa-check-circle"></i></button>
+                        ` : `
+                            <button class="btn btn-sm btn-outline-secondary" onclick="viewRentalDetails('${rental.id}')" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                        `
+                    });
+                });
+                table.draw();
+                showAlert('Éxito', 'Filtros aplicados correctamente.', 'success');
+            }
+        });
+    }
 
+    async function exportToCSV() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const { data: rentals, error: rentalsError } = await supabase
+            .from('rentals')
+            .select('*, users(name), machines(name)')
+            .eq('is_deleted', false)
+            .gte('start_time', today.toISOString());
+        if (rentalsError) {
+            log(`Error al exportar alquileres: ${rentalsError.message}`);
+            showAlert('Error', 'No se pudieron exportar los alquileres.', 'error');
+            return;
+        }
+        let csvContent = 'ID,Cliente,Cabina,Inicio,Fin,Tiempo Usado,Estado,Monto,Método de Pago\n';
+        rentals.forEach(rental => {
+            const clientName = rental.users.name || 'Cliente desconocido';
+            const machineName = rental.machines.name || 'Cabina desconocida';
+            const startTime = new Date(rental.start_time);
+            const endTime = rental.end_time ? new Date(rental.end_time) : null;
+            const timeUsed = rental.status === 'active' ? Math.floor((new Date() - startTime) / (1000 * 60)) : rental.time_used || 0;
+            csvContent += `${rental.id},${clientName},${machineName},${formatDateTime(startTime)},${endTime ? formatDateTime(endTime) : '-'},${timeUsed} min,${getStatusText(rental.status)},${rental.amount.toFixed(2)},${rental.payment_method ? getPaymentMethodText(rental.payment_method) : 'No especificado'}\n`;
+        });
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `alquileres_${today.toISOString().split('T')[0]}.csv`;
+        link.click();
+        showAlert('Éxito', 'Reporte exportado como CSV.', 'success');
+    }
 
+    function exportToPDF() {
+        showAlert('Info', 'Exportación a PDF no implementada. Integra jsPDF para funcionalidad completa.', 'info');
+    }
 
-    </script>
+    function exportRentals() {
+        Swal.fire({
+            title: 'Exportar Alquileres',
+            html: `
+                <div class="mb-3">
+                    <label for="export-format" class="form-label">Formato</label>
+                    <select class="form-select" id="export-format">
+                        <option value="csv">CSV</option>
+                        <option value="pdf">PDF</option>
+                    </select>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Exportar',
+            cancelButtonText: 'Cancelar',
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn btn-primary me-2',
+                cancelButton: 'btn btn-light'
+            }
+        }).then(result => {
+            if (result.isConfirmed) {
+                const format = document.getElementById('export-format').value;
+                if (format === 'csv') exportToCSV();
+                else if (format === 'pdf') exportToPDF();
+            }
+        });
+    }
+
+    // Funciones de utilidad
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar-wrapper');
+        const content = document.getElementById('page-content-wrapper');
+        sidebar.classList.toggle('active');
+        content.classList.toggle('collapsed');
+    }
+
+    function formatTime(date) {
+        return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatDateTime(date) {
+        return `${date.toLocaleDateString('es-ES')} ${date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    function getStatusText(status) {
+        return { 'active': 'Activo', 'completed': 'Completado', 'transferred': 'Transferido', 'cancelled': 'Cancelado', 'pending': 'Pendiente' }[status] || 'Desconocido';
+    }
+
+    function getStatusBadge(status) {
+        const badges = {
+            'active': '<span class="badge bg-success">Activo</span>',
+            'completed': '<span class="badge bg-primary">Completado</span>',
+            'transferred': '<span class="badge bg-info">Transferido</span>',
+            'cancelled': '<span class="badge bg-danger">Cancelado</span>',
+            'pending': '<span class="badge bg-warning">Pendiente</span>'
+        };
+        return badges[status] || '<span class="badge bg-secondary">Desconocido</span>';
+    }
+
+    function getPaymentMethodText(method) {
+        return { 'efectivo': 'Efectivo', 'yape': 'Yape', 'debiendo': 'Queda Debiendo' }[method] || 'No especificado';
+    }
+
+    // Inicializar al cargar
+    document.addEventListener('DOMContentLoaded', initRentalsPage);
+</script>
 </body>
-</html>
+</html

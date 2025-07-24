@@ -7,270 +7,290 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <link rel="stylesheet" href="styles.css" />
-  <style>
-    :root {
-      --primary-color: #2563eb;
-      --light-bg: #f4f7fe;
-      --card-radius: 1rem;
-      --transition-normal: 0.3s ease-in-out;
-      --text-color: #1f2937;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
+<style>
+        #sidebar-wrapper {
+            width: 250px;
+            background-color: var(--primary);
+            color: white;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            padding: 1rem 0;
+            transition: var(--transition-normal);
+            z-index: 1000;
+        }
 
-    body {
-      background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
-      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+        #page-content-wrapper {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 1rem;
+            transition: var(--transition-normal);
+        }
 
-    #sidebar-wrapper {
-      width: 250px;
-      background-color: var(--primary-color);
-      color: white;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      padding: 1rem 0;
-      z-index: 1000;
-      overflow-y: auto;
-      transition: left var(--transition-normal);
-    }
+        .navbar {
+            width: calc(100% - 20px);
+            margin-left: auto;
+        }
 
-    .sidebar .logo img {
-      width: 100%;
-      max-width: 220px;
-      padding: 0 15px;
-      object-fit: contain;
-    }
+        .navbar .container-fluid {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
 
-    .nav-link {
-      display: flex;
-      align-items: center;
-      padding: 10px 20px;
-      color: white;
-      text-decoration: none;
-      transition: background var(--transition-normal);
-    }
-
-    .nav-link:hover, .nav-link.active {
-      background-color: rgba(255, 255, 255, 0.15);
-    }
-
-    .nav-link i {
-      margin-right: 10px;
-      font-size: 1.1rem;
-    }
-
-    .nav-section-title {
-      font-weight: 600;
-      font-size: 0.85rem;
-      padding: 10px 20px;
-      opacity: 0.7;
-      text-transform: uppercase;
-    }
-
-    .user-info {
-      padding: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-      display: flex;
-      align-items: center;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      background-color: white;
-      color: var(--primary-color);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      margin-right: 10px;
-    }
-
-    #page-content-wrapper {
-      margin-left: 250px;
-      transition: margin-left var(--transition-normal);
-      padding: 1.5rem;
-    }
-
-    .card {
-      border-radius: var(--card-radius);
-      box-shadow: var(--shadow-sm);
-      border: none;
-      transition: transform var(--transition-normal);
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-    }
-
-    .card-body.bg-light {
-      background-color: var(--light-bg);
-    }
-
-    .form-label {
-      font-weight: 600;
-      color: var(--text-color);
-    }
-
-    .btn {
-      border-radius: 0.5rem;
-      font-weight: 500;
-    }
-
-    .table {
-      border-radius: 0.7rem;
-      overflow: hidden;
-    }
-
-    .table thead {
-      background-color: var(--light-bg);
-    }
-
-    #report-chart {
-      height: 300px;
-      max-width: 100%;
-    }
-
-    @media (max-width: 991px) {
-      #sidebar-wrapper {
-        left: -250px;
-      }
-      #sidebar-wrapper.active {
-        left: 0;
-      }
-      #page-content-wrapper {
-        margin-left: 0;
-      }
-    }
-  </style>
+        @media (max-width: 768px) {
+            #sidebar-wrapper {
+                transform: translateX(-100%);
+            }
+            #sidebar-wrapper.active {
+                transform: translateX(0);
+            }
+            #page-content-wrapper {
+                margin-left: 0;
+                width: 100%;
+            }
+            .navbar {
+                width: 100%;
+            }
+        }
+        /* Estilos para las estadísticas */
+        .rental-stats {
+            background-color: var(--white);
+            border-radius: var(--border-radius-md);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-normal);
+        }
+        
+        .rental-stats:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+        
+        .rental-stats .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-normal);
+        }
+        
+        .rental-stats .icon i {
+            font-size: 1.5rem;
+            transition: var(--transition-normal);
+        }
+        
+        .rental-stats:hover .icon {
+            transform: scale(1.1);
+        }
+        
+        .rental-stats h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--text-color);
+        }
+        
+        .rental-stats .badge {
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        
+        .rounded-pill {
+            border-radius: 50rem;
+        }
+        
+        /* Estilos para las tarjetas de máquinas */
+        .machine-card {
+            transition: var(--transition-normal);
+            border: none;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        
+        .machine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .machine-card .card-header {
+            border-radius: var(--border-radius-md) var(--border-radius-md) 0 0 !important;
+            background: var(--card-header-gradient);
+            color: var(--white);
+            padding: 1rem 1.25rem;
+        }
+        
+        .machine-card .card-header .badge {
+            padding: 0.5rem 0.75rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: 50rem;
+        }
+        
+        .machine-card .card-body {
+            padding: 1.25rem;
+        }
+        
+        .machine-card .card-footer {
+            background-color: rgba(0,0,0,0.02);
+            padding: 1rem 1.25rem;
+        }
+    </style>
 </head>
 <body>
-  <div class="d-flex" id="wrapper">
-    <div class="sidebar" id="sidebar-wrapper">
-      <div class="logo text-center mb-4">
-        <img src="assets/logocabinas.jpg" alt="Logo Cabinas" />
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Principal</div>
-        <a href="pagina1.html" class="nav-link"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
-        <a href="machines.html" class="nav-link"><i class="fas fa-desktop"></i>Cabinas</a>
-        <a href="rentals.html" class="nav-link"><i class="fas fa-clock"></i>Alquileres</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Administración</div>
-        <a href="users.html" class="nav-link"><i class="fas fa-users"></i>Usuarios</a>
-        <a href="reports.html" class="nav-link active"><i class="fas fa-chart-bar"></i>Reportes</a>
-        <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i>Configuración</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Cuenta</div>
-        <a href="index.html" class="nav-link"><i class="fas fa-sign-out-alt"></i>Cerrar Sesión</a>
-      </div>
-      <div class="user-info">
-        <div class="user-avatar">A</div>
-        <div class="user-details">
-          <div class="user-name">Admin</div>
-          <div class="user-role">Administrador</div>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar-wrapper">
+            <div class="logo">
+                <img src="assets/logocabinas.jpg" alt="Logo" />
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Principal</div>
+                <a href="pagina1.html" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="machines.html" class="nav-link">
+                    <i class="fas fa-desktop"></i>
+                    <span>Cabinas</span>
+                </a>
+                <a href="rentals.html" class="nav-link">
+                    <i class="fas fa-clock"></i>
+                    <span>Alquileres</span>
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Administración</div>
+                <a href="users.html" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="reports.html" class="nav-link active">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reportes</span>
+                </a>
+                <a href="settings.html" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </div>
+             
+             <div class="nav-section">
+                <div class="nav-section-title">Cuenta</div>
+                <a href="index.html" class="nav-link" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+             </div>
+             
+             <div class="user-info">
+                 <div class="user-avatar">A</div>
+                 <div class="user-details">
+                     <div class="user-name">Admin</div>
+                     <div class="user-role">Administrador</div>
+                 </div>
+             </div>
+            </div>
         </div>
-      </div>
+
+        <div id="page-content-wrapper">
+          <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top">
+            <div class="container-fluid px-4">
+              <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-icon" id="toggle-btn"><i class="fas fa-bars text-primary"></i></button>
+                <h5 class="ms-3 mb-0 fw-bold text-primary">Reportes</h5>
+              </div>
+            </div>
+          </nav>
+          <div class="main-content-container container mt-4">
+            <div class="row g-4">
+              <div class="col-12">
+                <div class="card border-0 shadow-sm mb-4">
+                  <div class="card-body bg-light">
+                    <div class="row g-3 align-items-end">
+                      <div class="col-md-4">
+                        <label class="form-label">Tipo de Reporte</label>
+                        <select class="form-select" id="report-type">
+                          <option value="rentals">Alquileres</option>
+                          <option value="income">Ingresos</option>
+                          <option value="usage">Uso de Cabinas</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label class="form-label">Desde</label>
+                        <input type="date" class="form-control" id="report-from" />
+                      </div>
+                      <div class="col-md-3">
+                        <label class="form-label">Hasta</label>
+                        <input type="date" class="form-control" id="report-to" />
+                      </div>
+                      <div class="col-md-2 d-grid">
+                        <button type="button" class="btn btn-primary" onclick="generateReport()">
+                          <i class="fas fa-search me-1"></i>Filtrar
+                        </button>
+                      </div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col text-end">
+                        <button class="btn btn-outline-success me-2" onclick="exportReport()">
+                          <i class="fas fa-file-excel me-1"></i>Exportar Excel
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="exportPDF()">
+                          <i class="fas fa-file-pdf me-1"></i>Exportar PDF
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="card border-0 shadow-sm mb-4">
+                  <div class="card-body bg-white">
+                    <h6 class="fw-bold mb-3 text-primary">Estadísticas Generales</h6>
+                    <div id="report-chart" class="mb-4"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="card border-0 shadow-sm mb-4">
+                  <div class="card-body bg-white">
+                    <h6 class="fw-bold mb-3 text-primary">Resultados Detallados</h6>
+                    <div class="table-responsive">
+                      <table class="table table-hover align-middle" id="report-table">
+                        <thead class="table-light">
+                          <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Cabina</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Tiempo (min)</th>
+                            <th>Estado</th>
+                            <th>Monto</th>
+                          </tr>
+                        </thead>
+                        <tbody id="report-table-body">
+                          <!-- Datos de reportes -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
-    <div id="page-content-wrapper">
-      <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top">
-        <div class="container-fluid px-4">
-          <div class="d-flex align-items-center">
-            <button class="btn btn-sm btn-icon" id="toggle-btn"><i class="fas fa-bars text-primary"></i></button>
-            <h5 class="ms-3 mb-0 fw-bold text-primary">Reportes</h5>
-          </div>
-        </div>
-      </nav>
-      <div class="main-content-container container mt-4">
-        <div class="row g-4">
-          <div class="col-12">
-            <div class="card border-0 shadow-sm mb-4">
-              <div class="card-body bg-light">
-                <div class="row g-3 align-items-end">
-                  <div class="col-md-4">
-                    <label class="form-label">Tipo de Reporte</label>
-                    <select class="form-select" id="report-type">
-                      <option value="rentals">Alquileres</option>
-                      <option value="income">Ingresos</option>
-                      <option value="usage">Uso de Cabinas</option>
-                    </select>
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label">Desde</label>
-                    <input type="date" class="form-control" id="report-from" />
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label">Hasta</label>
-                    <input type="date" class="form-control" id="report-to" />
-                  </div>
-                  <div class="col-md-2 d-grid">
-                    <button type="button" class="btn btn-primary" onclick="generateReport()">
-                      <i class="fas fa-search me-1"></i>Filtrar
-                    </button>
-                  </div>
-                </div>
-                <div class="row mt-3">
-                  <div class="col text-end">
-                    <button class="btn btn-outline-success me-2" onclick="exportReport()">
-                      <i class="fas fa-file-excel me-1"></i>Exportar Excel
-                    </button>
-                    <button class="btn btn-outline-danger" onclick="exportPDF()">
-                      <i class="fas fa-file-pdf me-1"></i>Exportar PDF
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-12">
-            <div class="card border-0 shadow-sm mb-4">
-              <div class="card-body bg-white">
-                <h6 class="fw-bold mb-3 text-primary">Estadísticas Generales</h6>
-                <div id="report-chart" class="mb-4"></div>
-              </div>
-            </div>
-          </div>
-          <div class="col-12">
-            <div class="card border-0 shadow-sm mb-4">
-              <div class="card-body bg-white">
-                <h6 class="fw-bold mb-3 text-primary">Resultados Detallados</h6>
-                <div class="table-responsive">
-                  <table class="table table-hover align-middle" id="report-table">
-                    <thead class="table-light">
-                      <tr>
-                        <th>ID</th>
-                        <th>Cliente</th>
-                        <th>Cabina</th>
-                        <th>Inicio</th>
-                        <th>Fin</th>
-                        <th>Tiempo (min)</th>
-                        <th>Estado</th>
-                        <th>Monto</th>
-                      </tr>
-                    </thead>
-                    <tbody id="report-table-body">
-                      <!-- Datos de reportes -->
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
   <script>
-
 
 /**
  * Sistema de Control de Cabinas - reports.html
@@ -533,7 +553,7 @@ function exportReport() {
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
-    XLSX.write(wb, `Reporte_${reportType}_${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.writeFile(wb, `Reporte_${reportType}_${new Date().toISOString().split('T')[0]}.xlsx`);
 
     auditLogsData.push({
         id: auditLogsData.length + 1,
@@ -546,9 +566,14 @@ function exportReport() {
 }
 
 function exportPDF() {
+    if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF || typeof window.jspdf.jsPDF.prototype.autoTable !== 'function') {
+        showAlert('Error', 'La librería jsPDF o el plugin autoTable no se cargaron correctamente. Verifica tu conexión.', 'error');
+        return;
+    }
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    
+
     const reportType = document.getElementById('report-type').value;
     const fromDate = new Date(document.getElementById('report-from').value);
     const toDate = new Date(document.getElementById('report-to').value);
@@ -586,7 +611,8 @@ function exportPDF() {
         startY: 40,
         theme: 'striped',
         headStyles: { fillColor: [37, 99, 235] },
-        styles: { fontSize: 8, cellPadding: 2 }
+        styles: { fontSize: 8, cellPadding: 2 },
+        margin: { top: 30 }
     });
 
     doc.save(`Reporte_${reportType}_${new Date().toISOString().split('T')[0]}.pdf`);
@@ -631,8 +657,6 @@ function showAlert(title, message, type) {
 document.addEventListener('DOMContentLoaded', () => {
     initReportsPage();
 });
-
-
 
   </script>
 </body>
