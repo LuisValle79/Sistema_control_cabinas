@@ -7,122 +7,148 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body class="login-page">
-    <div class="login-container">
-        <div class="login-box">
-            <h2>Acceso de Administrador</h2>
-            <form id="loginForm">
-                <div class="input-group">
-                    <label for="username">Usuario</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit" class="login-button">Iniciar Sesión</button>
-            </form>
+  <div class="login-split">
+    <!-- Izquierda: Login -->
+    <div class="login-left">
+      <div class="login-box-minimal">
+        <div class="login-logo">
+          <i class="fa-solid fa-desktop"></i>
         </div>
+        <h2>Acceso de Administrador</h2>
+        <form id="loginForm" autocomplete="off">
+          <div class="input-group">
+            <span class="input-icon"><i class="fa-solid fa-user"></i></span>
+            <input type="text" id="username" name="username" required placeholder="Correo de administrador">
+          </div>
+          <div class="input-group">
+            <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+            <input type="password" id="password" name="password" required placeholder="Contraseña">
+          </div>
+          <button type="submit" class="login-button">Entrar</button>
+        </form>
+      </div>
     </div>
-    <script>
-        const { createClient } = window.supabase;
-        const supabaseUrl = 'https://jbirpporhcxssduqwvge.supabase.co';
-        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiaXJwcG9yaGN4c3NkdXF3dmdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNzYzNTEsImV4cCI6MjA2ODc1MjM1MX0.5rvXuuYdA95MsRAtpfiT-7R8SxdHh0sOm4ZsxvjeMUg';
-        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    <!-- Derecha: Imagen y texto -->
+    <div class="login-right">
+      <div class="login-welcome">
+        <h1>Bienvenidos a<br><span>Cabinas Miguel y Karla</span></h1>
+        <p>Tu espacio digital seguro y confiable</p>
+      </div>
+      <div class="login-bg-img"></div>
+    </div>
+  </div>
+  <!-- Mensaje de bienvenida al loguear -->
+  <div id="welcome-modal" class="welcome-modal">
+    <div class="welcome-content">
+      <h2>¡Bienvenid@!</h2>
+      <p>Accediendo a Cabinas Miguel y Karla...</p>
+      <div class="loader"></div>
+    </div>
+  </div>
+  <script>
+    const { createClient } = window.supabase;
+    const supabaseUrl = 'https://jbirpporhcxssduqwvge.supabase.co';
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiaXJwcG9yaGN4c3NkdXF3dmdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNzYzNTEsImV4cCI6MjA2ODc1MjM1MX0.5rvXuuYdA95MsRAtpfiT-7R8SxdHh0sOm4ZsxvjeMUg';
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-        function log(message) {
-            console.log(`[${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}] ${message}`);
+    function log(message) {
+        console.log(`[${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}] ${message}`);
+    }
+
+    function showAlert(title, message, type) {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: type,
+            confirmButtonText: 'Aceptar',
+            buttonsStyling: false,
+            customClass: { confirmButton: 'btn btn-primary' }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const loginForm = document.getElementById('loginForm');
+        if (!loginForm) {
+            log('Formulario de login no encontrado.');
+            return;
         }
 
-        function showAlert(title, message, type) {
-            Swal.fire({
-                title: title,
-                text: message,
-                icon: type,
-                confirmButtonText: 'Aceptar',
-                buttonsStyling: false,
-                customClass: { confirmButton: 'btn btn-primary' }
-            });
-        }
+        let isSubmitting = false;
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (isSubmitting) return;
+            isSubmitting = true;
+            log('Intentando iniciar sesión...');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const loginForm = document.getElementById('loginForm');
-            if (!loginForm) {
-                log('Formulario de login no encontrado.');
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!username || !password) {
+                showAlert('Error', 'Por favor, complete todos los campos.', 'error');
+                isSubmitting = false;
                 return;
             }
 
-            let isSubmitting = false;
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                if (isSubmitting) return;
-                isSubmitting = true;
-                log('Intentando iniciar sesión...');
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: username,
+                    password: password
+                });
 
-                const username = document.getElementById('username').value.trim();
-                const password = document.getElementById('password').value.trim();
-
-                if (!username || !password) {
-                    showAlert('Error', 'Por favor, complete todos los campos.', 'error');
+                if (error) {
+                    log(`Error de autenticación: ${error.message} - Código: ${error.code}`);
+                    showAlert('Error', `Fallo al iniciar sesión: ${error.message} (Código: ${error.code}).`, 'error');
                     isSubmitting = false;
                     return;
                 }
 
-                try {
-                    const { data, error } = await supabase.auth.signInWithPassword({
-                        email: username,
-                        password: password
-                    });
-
-                    if (error) {
-                        log(`Error de autenticación: ${error.message} - Código: ${error.code}`);
-                        showAlert('Error', `Fallo al iniciar sesión: ${error.message} (Código: ${error.code}).`, 'error');
-                        isSubmitting = false;
-                        return;
-                    }
-
-                    log(`Autenticación exitosa. User ID: ${data.user.id}`);
-                    await verifyAndRedirect(data.user.id);
-                    isSubmitting = false;
-                } catch (error) {
-                    log(`Error general: ${error.message} - Stack: ${error.stack}`);
-                    showAlert('Error', `Ocurrió un error: ${error.message}`, 'error');
-                    isSubmitting = false;
-                }
-            });
-
-            async function verifyAndRedirect(userId) {
-                try {
-                    const { data: userData, error: userError } = await supabase
-                        .from('users')
-                        .select('role')
-                        .eq('id', userId)
-                        .single();
-
-                    if (userError) {
-                        log(`Error al verificar rol: ${userError.message} - Detalle: ${userError.details} - Código: ${userError.code}`);
-                        showAlert('Error', `Usuario no encontrado o error al verificar permisos: ${userError.message}`, 'error');
-                        await supabase.auth.signOut();
-                        return;
-                    }
-
-                    if (userData.role !== 'Administrador') {
-                        log('Usuario no es administrador.');
-                        showAlert('Error', 'Solo los administradores pueden iniciar sesión.', 'error');
-                        await supabase.auth.signOut();
-                        return;
-                    }
-
-                    log('Usuario verificado como administrador. Redirigiendo...');
-                    window.location.href = 'users.html';
-                } catch (error) {
-                    log(`Error en verificación: ${error.message} - Stack: ${error.stack}`);
-                    showAlert('Error', `Ocurrió un error al verificar: ${error.message}`, 'error');
-                    await supabase.auth.signOut();
-                }
+                log(`Autenticación exitosa. User ID: ${data.user.id}`);
+                await verifyAndRedirect(data.user.id);
+                isSubmitting = false;
+            } catch (error) {
+                log(`Error general: ${error.message} - Stack: ${error.stack}`);
+                showAlert('Error', `Ocurrió un error: ${error.message}`, 'error');
+                isSubmitting = false;
             }
         });
-    </script>
+
+        async function verifyAndRedirect(userId) {
+            try {
+                const { data: userData, error: userError } = await supabase
+                    .from('users')
+                    .select('role')
+                    .eq('id', userId)
+                    .single();
+
+                if (userError) {
+                    log(`Error al verificar rol: ${userError.message} - Detalle: ${userError.details} - Código: ${userError.code}`);
+                    showAlert('Error', `Usuario no encontrado o error al verificar permisos: ${userError.message}`, 'error');
+                    await supabase.auth.signOut();
+                    return;
+                }
+
+                if (userData.role !== 'Administrador') {
+                    log('Usuario no es administrador.');
+                    showAlert('Error', 'Solo los administradores pueden iniciar sesión.', 'error');
+                    await supabase.auth.signOut();
+                    return;
+                }
+
+                // Mostrar modal de bienvenida antes de redirigir
+                document.getElementById('welcome-modal').style.display = 'flex';
+                setTimeout(() => {
+                    window.location.href = 'users.html';
+                }, 1800);
+            } catch (error) {
+                log(`Error en verificación: ${error.message} - Stack: ${error.stack}`);
+                showAlert('Error', `Ocurrió un error al verificar: ${error.message}`, 'error');
+                await supabase.auth.signOut();
+            }
+        }
+    });
+  </script>
 </body>
 </html>
