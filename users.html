@@ -141,7 +141,7 @@
              
             <div class="nav-section">
                 <div class="nav-section-title">Cuenta</div>
-                <a href="#" class="nav-link" id="logout-btn">
+                <a href="index.html" class="nav-link" id="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Cerrar Sesión</span>
                 </a>
@@ -267,7 +267,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" onclick="saveUser()">Guardar</button>
                 </div>
             </div>
@@ -280,306 +280,308 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-    // Inicializar el cliente Supabase
-    const { createClient } = window.supabase;
-    const supabaseUrl = 'https://jbirpporhcxssduqwvge.supabase.co'; // Tu Project URL
-    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiaXJwcG9yaGN4c3NkdXF3dmdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNzYzNTEsImV4cCI6MjA2ODc1MjM1MX0.5rvXuuYdA95MsRAtpfiT-7R8SxdHh0sOm4ZsxvjeMUg'; // Tu anon key
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    <script>
+        // Inicializar el cliente Supabase
+        const { createClient } = window.supabase;
+        const supabaseUrl = 'https://jbirpporhcxssduqwvge.supabase.co'; // Tu Project URL
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiaXJwcG9yaGN4c3NkdXF3dmdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNzYzNTEsImV4cCI6MjA2ODc1MjM1MX0.5rvXuuYdA95MsRAtpfiT-7R8SxdHh0sOm4ZsxvjeMUg'; // Tu anon key
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-    // Función de depuración
-    function log(message) {
-        console.log(`[${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}] ${message}`);
-    }
-
-    // Función para mostrar alertas
-    function showAlert(title, message, type, options = {}) {
-        return Swal.fire({
-            title: title,
-            text: message,
-            icon: type,
-            confirmButtonText: 'Aceptar',
-            ...options,
-            buttonsStyling: false,
-            customClass: {
-                confirmButton: 'btn btn-primary',
-                popup: 'animated fadeIn'
-            }
-        });
-    }
-
-    // Inicializar la página con autenticación
-    async function initUsersPage() {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error || !session) {
-            log('No hay sesión activa: ' + (error ? error.message : 'Sin sesión'));
-            showAlert('Sesión expirada', 'Debes iniciar sesión como administrador.', 'warning').then(() => {
-                window.location.href = 'index.html';
-            });
-            return;
-        }
-        log(`Sesión activa. User ID: ${session.user.id}`);
-
-        // Cargar tablas de usuarios
-        loadUserTable(true); // Usuarios activos
-        loadUserTable(false); // Usuarios inactivos o eliminados
-
-        // Configurar toggle del sidebar
-        const toggleBtn = document.getElementById('toggle-btn');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', toggleSidebar);
+        // Función de depuración
+        function log(message) {
+            console.log(`[${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}] ${message}`);
         }
 
-        // Configurar formulario del modal
-        const userForm = document.getElementById('userForm');
-        if (userForm) {
-            userForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                saveUser();
-            });
-        }
-    }
-
-    // Función para cerrar sesión
-    async function logout() {
-        log('Cerrando sesión...');
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-            log(`Error al cerrar sesión: ${error.message}`);
-            showAlert('Error', 'No se pudo cerrar la sesión.', 'error');
-        } else {
-            log('Sesión cerrada exitosamente.');
-            showAlert('Éxito', 'Sesión cerrada.', 'success').then(() => {
-                window.location.href = 'index.html';
-            });
-        }
-    }
-
-    // Función para cargar la tabla de usuarios
-    async function loadUserTable(active) {
-        log(`Cargando tabla de usuarios ${active ? 'activos' : 'inactivos'}...`);
-        const { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('is_active', active);
-        if (error) {
-            log(`Error al cargar usuarios: ${error.message}`);
-            showAlert('Error', 'No se pudieron cargar los usuarios.', 'error');
-        } else {
-            const tbody = document.getElementById(active ? 'active-users-table' : 'inactive-users-table');
-            tbody.innerHTML = '';
-            data.forEach(user => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${user.id}</td>
-                    <td>${user.name || 'N/A'}</td>
-                    <td>${user.email}</td>
-                    <td>${user.phone || 'N/A'}</td>
-                    <td>${user.role}</td>
-                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
-                    <td>
-                        ${active ? `
-                            <button class="btn btn-sm btn-warning" onclick="openEditUserModal('${user.id}')"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i></button>
-                        ` : `
-                            <button class="btn btn-sm btn-success" onclick="restoreUser('${user.id}')"><i class="fas fa-undo"></i></button>
-                        `}
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-    }
-
-    // Función para abrir el modal de crear/editar usuario
-    function openCreateUserModal() {
-        log('Abriendo modal para crear usuario...');
-        document.getElementById('userId').value = '';
-        document.getElementById('userName').value = '';
-        document.getElementById('userEmail').value = '';
-        document.getElementById('userPhone').value = '';
-        document.getElementById('userRole').value = 'Cliente';
-        document.getElementById('userPassword').value = '';
-        document.getElementById('userModalLabel').textContent = 'Agregar Usuario';
-        new bootstrap.Modal(document.getElementById('userModal')).show();
-    }
-
-    // Función para abrir el modal de edición
-    function openEditUserModal(userId) {
-        log(`Abriendo modal para editar usuario con ID: ${userId}...`);
-        supabase
-            .from('users')
-            .select('*')
-            .eq('id', userId)
-            .single()
-            .then(({ data, error }) => {
-                if (error) {
-                    log(`Error al cargar usuario: ${error.message}`);
-                    showAlert('Error', 'No se pudo cargar el usuario.', 'error');
-                } else {
-                    document.getElementById('userId').value = data.id;
-                    document.getElementById('userName').value = data.name || '';
-                    document.getElementById('userEmail').value = data.email;
-                    document.getElementById('userPhone').value = data.phone || '';
-                    document.getElementById('userRole').value = data.role;
-                    document.getElementById('userPassword').value = ''; // No mostrar contraseña por seguridad
-                    document.getElementById('userModalLabel').textContent = 'Editar Usuario';
-                    new bootstrap.Modal(document.getElementById('userModal')).show();
+        // Función para mostrar alertas
+        function showAlert(title, message, type, options = {}) {
+            return Swal.fire({
+                title: title,
+                text: message,
+                icon: type,
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cancelar',
+                ...options,
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-primary me-2',
+                    cancelButton: 'btn btn-outline-secondary',
+                    popup: 'animated fadeIn'
                 }
             });
-    }
+        }
 
-    // Función para guardar usuario
-    async function saveUser() {
-        log('Guardando usuario...');
-        const userId = document.getElementById('userId').value;
-        const userData = {
-            name: document.getElementById('userName').value,
-            email: document.getElementById('userEmail').value,
-            phone: document.getElementById('userPhone').value,
-            role: document.getElementById('userRole').value,
-            is_active: true
-        };
-        const password = document.getElementById('userPassword').value;
-
-        try {
-            if (userId) {
-                // Actualizar usuario existente
-                const { error } = await supabase
-                    .from('users')
-                    .update(userData)
-                    .eq('id', userId);
-                if (error) throw error;
-                log(`Usuario con ID ${userId} actualizado`);
-                showAlert('Éxito', 'Usuario actualizado exitosamente.', 'success').then(() => {
-                    document.getElementById('userModal').querySelector('[data-bs-dismiss="modal"]').click();
-                    loadUserTable(true);
-                    loadUserTable(false);
+        // Inicializar la página con autenticación
+        async function initUsersPage() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                log('No hay sesión activa: ' + (error ? error.message : 'Sin sesión'));
+                showAlert('Sesión expirada', 'Debes iniciar sesión como administrador.', 'warning').then(() => {
+                    window.location.href = 'index.html';
                 });
+                return;
+            }
+            log(`Sesión activa. User ID: ${session.user.id}`);
+
+            // Cargar tablas de usuarios
+            loadUserTable(true); // Usuarios activos
+            loadUserTable(false); // Usuarios inactivos o eliminados
+
+            // Configurar toggle del sidebar
+            const toggleBtn = document.getElementById('toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', toggleSidebar);
+            }
+
+            // Configurar formulario del modal
+            const userForm = document.getElementById('userForm');
+            if (userForm) {
+                userForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    saveUser();
+                });
+            }
+        }
+
+        // Función para cerrar sesión
+        async function logout() {
+            log('Cerrando sesión...');
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                log(`Error al cerrar sesión: ${error.message}`);
+                showAlert('Error', 'No se pudo cerrar la sesión.', 'error');
             } else {
-                // Crear nuevo usuario
-                if (!password) {
-                    throw new Error('La contraseña no puede estar vacía.');
-                }
-                log(`Intentando registrar usuario con email: ${userData.email}`);
-                const { data, error: authError } = await supabase.auth.signUp({
-                    email: userData.email,
-                    password: password,
-                    options: {
-                        data: { role: userData.role }
+                log('Sesión cerrada exitosamente.');
+                showAlert('Éxito', 'Sesión cerrada.', 'success').then(() => {
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+
+        // Función para cargar la tabla de usuarios
+        async function loadUserTable(active) {
+            log(`Cargando tabla de usuarios ${active ? 'activos' : 'inactivos'}...`);
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('is_active', active);
+            if (error) {
+                log(`Error al cargar usuarios: ${error.message}`);
+                showAlert('Error', 'No se pudieron cargar los usuarios.', 'error');
+            } else {
+                const tbody = document.getElementById(active ? 'active-users-table' : 'inactive-users-table');
+                tbody.innerHTML = '';
+                data.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.name || 'N/A'}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phone || 'N/A'}</td>
+                        <td>${user.role}</td>
+                        <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                        <td>
+                            ${active ? `
+                                <button class="btn btn-sm btn-warning" onclick="openEditUserModal('${user.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i></button>
+                            ` : `
+                                <button class="btn btn-sm btn-success" onclick="restoreUser('${user.id}')"><i class="fas fa-undo"></i></button>
+                            `}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        // Función para abrir el modal de crear/editar usuario
+        function openCreateUserModal() {
+            log('Abriendo modal para crear usuario...');
+            document.getElementById('userId').value = '';
+            document.getElementById('userName').value = '';
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userPhone').value = '';
+            document.getElementById('userRole').value = 'Cliente';
+            document.getElementById('userPassword').value = '';
+            document.getElementById('userModalLabel').textContent = 'Agregar Usuario';
+            new bootstrap.Modal(document.getElementById('userModal')).show();
+        }
+
+        // Función para abrir el modal de edición
+        function openEditUserModal(userId) {
+            log(`Abriendo modal para editar usuario con ID: ${userId}...`);
+            supabase
+                .from('users')
+                .select('*')
+                .eq('id', userId)
+                .single()
+                .then(({ data, error }) => {
+                    if (error) {
+                        log(`Error al cargar usuario: ${error.message}`);
+                        showAlert('Error', 'No se pudo cargar el usuario.', 'error');
+                    } else {
+                        document.getElementById('userId').value = data.id;
+                        document.getElementById('userName').value = data.name || '';
+                        document.getElementById('userEmail').value = data.email;
+                        document.getElementById('userPhone').value = data.phone || '';
+                        document.getElementById('userRole').value = data.role;
+                        document.getElementById('userPassword').value = ''; // No mostrar contraseña por seguridad
+                        document.getElementById('userModalLabel').textContent = 'Editar Usuario';
+                        new bootstrap.Modal(document.getElementById('userModal')).show();
                     }
                 });
-                if (authError) {
-                    log(`Error en auth.signUp: ${authError.message}`);
-                    throw authError;
-                }
-                log(`Usuario creado en auth con ID: ${data.user.id}`);
-                const { error: insertError } = await supabase
-                    .from('users')
-                    .insert({
-                        id: data.user.id,
-                        name: userData.name,
-                        email: userData.email,
-                        phone: userData.phone,
-                        role: userData.role,
-                        is_active: userData.is_active,
-                        created_at: new Date().toISOString()
-                    });
-                if (insertError) {
-                    log(`Error en inserción a public.users: ${insertError.message}`);
-                    throw insertError;
-                }
-                log(`Usuario con ID ${data.user.id} creado en public.users`);
-                showAlert('Éxito', 'Usuario creado exitosamente. Revisa tu email para confirmarlo.', 'success').then(() => {
-                    document.getElementById('userModal').querySelector('[data-bs-dismiss="modal"]').click();
-                    loadUserTable(true);
-                    loadUserTable(false);
-                });
-            }
-        } catch (error) {
-            log(`Error al guardar usuario: ${error.message}`);
-            showAlert('Error', `No se pudo ${userId ? 'actualizar' : 'crear'} el usuario: ${error.message}`, 'error');
         }
-    }
 
-    // Función para eliminar usuario
-    async function deleteUser(userId) {
-        log(`Eliminando usuario con ID: ${userId}...`);
-        showAlert('Confirmar', '¿Estás seguro de eliminar este usuario?', 'warning', {
-            showCancelButton: true,
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                supabase
-                    .from('users')
-                    .update({ is_active: false })
-                    .eq('id', userId)
-                    .then(({ error }) => {
-                        if (error) {
-                            log(`Error al eliminar usuario: ${error.message}`);
-                            showAlert('Error', 'No se pudo eliminar el usuario.', 'error');
-                        } else {
-                            log(`Usuario con ID ${userId} eliminado`);
-                            showAlert('Éxito', 'Usuario eliminado exitosamente.', 'success').then(() => {
-                                loadUserTable(true);
-                                loadUserTable(false);
-                            });
+        // Función para guardar usuario
+        async function saveUser() {
+            log('Guardando usuario...');
+            const userId = document.getElementById('userId').value;
+            const userData = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                phone: document.getElementById('userPhone').value,
+                role: document.getElementById('userRole').value,
+                is_active: true
+            };
+            const password = document.getElementById('userPassword').value;
+
+            try {
+                if (userId) {
+                    // Actualizar usuario existente
+                    const { error } = await supabase
+                        .from('users')
+                        .update(userData)
+                        .eq('id', userId);
+                    if (error) throw error;
+                    log(`Usuario con ID ${userId} actualizado`);
+                    showAlert('Éxito', 'Usuario actualizado exitosamente.', 'success').then(() => {
+                        document.getElementById('userModal').querySelector('[data-bs-dismiss="modal"]').click();
+                        loadUserTable(true);
+                        loadUserTable(false);
+                    });
+                } else {
+                    // Crear nuevo usuario
+                    if (!password) {
+                        throw new Error('La contraseña no puede estar vacía.');
+                    }
+                    log(`Intentando registrar usuario con email: ${userData.email}`);
+                    const { data, error: authError } = await supabase.auth.signUp({
+                        email: userData.email,
+                        password: password,
+                        options: {
+                            data: { role: userData.role }
                         }
                     });
-            }
-        });
-    }
-
-    // Función para restaurar usuario
-    async function restoreUser(userId) {
-        log(`Restaurando usuario con ID: ${userId}...`);
-        showAlert('Confirmar', '¿Estás seguro de restaurar este usuario?', 'info', {
-            showCancelButton: true,
-            confirmButtonText: 'Sí, restaurar',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                supabase
-                    .from('users')
-                    .update({ is_active: true })
-                    .eq('id', userId)
-                    .then(({ error }) => {
-                        if (error) {
-                            log(`Error al restaurar usuario: ${error.message}`);
-                            showAlert('Error', 'No se pudo restaurar el usuario.', 'error');
-                        } else {
-                            log(`Usuario con ID ${userId} restaurado`);
-                            showAlert('Éxito', 'Usuario restaurado exitosamente.', 'success').then(() => {
-                                loadUserTable(true);
-                                loadUserTable(false);
-                            });
-                        }
+                    if (authError) {
+                        log(`Error en auth.signUp: ${authError.message}`);
+                        throw authError;
+                    }
+                    log(`Usuario creado en auth con ID: ${data.user.id}`);
+                    const { error: insertError } = await supabase
+                        .from('users')
+                        .insert({
+                            id: data.user.id,
+                            name: userData.name,
+                            email: userData.email,
+                            phone: userData.phone,
+                            role: userData.role,
+                            is_active: userData.is_active,
+                            created_at: new Date().toISOString()
+                        });
+                    if (insertError) {
+                        log(`Error en inserción a public.users: ${insertError.message}`);
+                        throw insertError;
+                    }
+                    log(`Usuario con ID ${data.user.id} creado en public.users`);
+                    showAlert('Éxito', 'Usuario creado exitosamente. Revisa tu email para confirmarlo.', 'success').then(() => {
+                        document.getElementById('userModal').querySelector('[data-bs-dismiss="modal"]').click();
+                        loadUserTable(true);
+                        loadUserTable(false);
                     });
+                }
+            } catch (error) {
+                log(`Error al guardar usuario: ${error.message}`);
+                showAlert('Error', `No se pudo ${userId ? 'actualizar' : 'crear'} el usuario: ${error.message}`, 'error');
             }
-        });
-    }
+        }
 
-    // Función para alternar el sidebar
-    function toggleSidebar() {
-        log('Alternando sidebar...');
-        document.getElementById('sidebar-wrapper').classList.toggle('toggled');
-        document.getElementById('content').classList.toggle('toggled');
-    }
-
-    // Inicializar al cargar la página
-    document.addEventListener('DOMContentLoaded', () => {
-        initUsersPage();
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                logout();
+        // Función para eliminar usuario
+        async function deleteUser(userId) {
+            log(`Eliminando usuario con ID: ${userId}...`);
+            showAlert('Confirmar', '¿Estás seguro de eliminar este usuario?', 'warning', {
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    supabase
+                        .from('users')
+                        .update({ is_active: false })
+                        .eq('id', userId)
+                        .then(({ error }) => {
+                            if (error) {
+                                log(`Error al eliminar usuario: ${error.message}`);
+                                showAlert('Error', 'No se pudo eliminar el usuario.', 'error');
+                            } else {
+                                log(`Usuario con ID ${userId} eliminado`);
+                                showAlert('Éxito', 'Usuario eliminado exitosamente.', 'success').then(() => {
+                                    loadUserTable(true);
+                                    loadUserTable(false);
+                                });
+                            }
+                        });
+                }
             });
         }
-    });
-</script>
+
+        // Función para restaurar usuario
+        async function restoreUser(userId) {
+            log(`Restaurando usuario con ID: ${userId}...`);
+            showAlert('Confirmar', '¿Estás seguro de restaurar este usuario?', 'info', {
+                showCancelButton: true,
+                confirmButtonText: 'Sí, restaurar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    supabase
+                        .from('users')
+                        .update({ is_active: true })
+                        .eq('id', userId)
+                        .then(({ error }) => {
+                            if (error) {
+                                log(`Error al restaurar usuario: ${error.message}`);
+                                showAlert('Error', 'No se pudo restaurar el usuario.', 'error');
+                            } else {
+                                log(`Usuario con ID ${userId} restaurado`);
+                                showAlert('Éxito', 'Usuario restaurado exitosamente.', 'success').then(() => {
+                                    loadUserTable(true);
+                                    loadUserTable(false);
+                                });
+                            }
+                        });
+                }
+            });
+        }
+
+        // Función para alternar el sidebar
+        function toggleSidebar() {
+            log('Alternando sidebar...');
+            document.getElementById('sidebar-wrapper').classList.toggle('toggled');
+            document.getElementById('content').classList.toggle('toggled');
+        }
+
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            initUsersPage();
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+        });
+    </script>
 </body>
 </html>
