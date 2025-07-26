@@ -12,89 +12,210 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* Estilos para las estadísticas */
-        .rental-stats {
-            background-color: var(--white);
-            border-radius: var(--border-radius-md);
-            padding: 1.25rem;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition-normal);
+        :root {
+            --primary: #1a73e8;
+            --secondary: #f1f3f4;
+            --accent: #34c759;
+            --text-color: #202124;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --transition-normal: all 0.3s ease;
+            --border-radius-md: 12px;
         }
-        
-        .rental-stats:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-3px);
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e8f0fe 0%, #f5f7fa 100%);
+            min-height: 100vh;
         }
-        
-        .rental-stats .icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition-normal);
+
+        .content {
+            padding: 2rem;
         }
-        
-        .rental-stats .icon i {
-            font-size: 1.5rem;
-            transition: var(--transition-normal);
+
+        .table-container {
+            padding: 0;
+            background: none;
         }
-        
-        .rental-stats:hover .icon {
-            transform: scale(1.1);
-        }
-        
-        .rental-stats h3 {
+
+        .table-container h4 {
             font-size: 1.75rem;
             font-weight: 700;
-            margin-bottom: 0.25rem;
             color: var(--text-color);
+            margin-bottom: 1.5rem;
         }
-        
-        .rental-stats .badge {
+
+        .nav-tabs .nav-link {
+            color: var(--text-color);
             font-weight: 500;
-            font-size: 0.8rem;
-        }
-        
-        .rounded-pill {
-            border-radius: 50rem;
-        }
-        
-        /* Estilos para las tarjetas de máquinas */
-        .machine-card {
             transition: var(--transition-normal);
-            border: none;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        /* Estilos para las tarjetas de usuarios */
+        .user-card {
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-md);
             box-shadow: var(--shadow-sm);
+            transition: var(--transition-normal);
             overflow: hidden;
         }
-        
-        .machine-card:hover {
+
+        .user-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-md);
         }
-        
-        .machine-card .card-header {
-            border-radius: var(--border-radius-md) var(--border-radius-md) 0 0 !important;
-            background: var(--card-header-gradient);
+
+        .user-card .card-header {
+            background: linear-gradient(90deg, var(--primary), #4285f4);
             color: var(--white);
-            padding: 1rem 1.25rem;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: none;
         }
-        
-        .machine-card .card-header .badge {
-            padding: 0.5rem 0.75rem;
+
+        .user-card .card-header .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #34c759, #66d47e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
             font-weight: 600;
-            font-size: 0.85rem;
+            color: var(--white);
+        }
+
+        .user-card .card-header h5 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .user-card .card-body {
+            padding: 1rem;
+        }
+
+        .user-card .card-body .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .user-card .card-body .user-info div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+
+        .user-card .card-body .user-info i {
+            color: var(--primary);
+            width: 18px;
+            text-align: center;
+        }
+
+        .user-card .card-body .user-info .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
             border-radius: 50rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: linear-gradient(90deg, #e8f0fe, #d2e3fc);
+            color: var(--primary);
+            transition: var(--transition-normal);
         }
-        
-        .machine-card .card-body {
-            padding: 1.25rem;
+
+        .user-card .card-body .user-info .role-badge:hover {
+            background: linear-gradient(90deg, #d2e3fc, #bbdefb);
         }
-        
-        .machine-card .card-footer {
-            background-color: rgba(0,0,0,0.02);
-            padding: 1rem 1.25rem;
+
+        .user-card .card-footer {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .user-card .btn {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            transition: var(--transition-normal);
+        }
+
+        .user-card .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-card .btn-outline-warning,
+        .user-card .btn-outline-danger,
+        .user-card .btn-outline-success {
+            border-width: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 1.5rem;
+            }
+
+            .table-container h4 {
+                font-size: 1.5rem;
+            }
+
+            .user-card .card-header .avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+
+            .user-card .card-header h5 {
+                font-size: 1rem;
+            }
+
+            .user-card .card-body .user-info div {
+                font-size: 0.85rem;
+            }
+
+            .user-card .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content {
+                padding: 1rem;
+            }
+
+            .user-card {
+                margin-bottom: 1rem;
+            }
+
+            .user-card .card-header {
+                padding: 0.6rem 0.8rem;
+            }
+
+            .user-card .card-body {
+                padding: 0.8rem;
+            }
+
+            .user-card .card-footer {
+                padding: 0.6rem 0.8rem;
+            }
         }
     </style>
 </head>
@@ -185,43 +306,13 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="active-users">
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nombre</th>
-                                        <th>Email</th>
-                                        <th>Teléfono</th>
-                                        <th>Rol</th>
-                                        <th>Fecha Registro</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="active-users-table">
-                                    <!-- Filas generadas dinámicamente -->
-                                </tbody>
-                            </table>
+                        <div class="row g-4" id="active-users-table">
+                            <!-- Tarjetas generadas dinámicamente -->
                         </div>
                     </div>
                     <div class="tab-pane fade" id="inactive-users">
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nombre</th>
-                                        <th>Email</th>
-                                        <th>Teléfono</th>
-                                        <th>Rol</th>
-                                        <th>Fecha Registro</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="inactive-users-table">
-                                    <!-- Filas generadas dinámicamente -->
-                                </tbody>
-                            </table>
+                        <div class="row g-4" id="inactive-users-table">
+                            <!-- Tarjetas generadas dinámicamente -->
                         </div>
                     </div>
                 </div>
@@ -283,8 +374,8 @@
     <script>
         // Inicializar el cliente Supabase
         const { createClient } = window.supabase;
-        const supabaseUrl = 'https://jbirpporhcxssduqwvge.supabase.co'; // Tu Project URL
-        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiaXJwcG9yaGN4c3NkdXF3dmdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNzYzNTEsImV4cCI6MjA2ODc1MjM1MX0.5rvXuuYdA95MsRAtpfiT-7R8SxdHh0sOm4ZsxvjeMUg'; // Tu anon key
+        const supabaseUrl = 'https://jbirpporhcxssduqwvge.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiaXJwcG9yaGN4c3NkdXF3dmdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNzYzNTEsImV4cCI6MjA2ODc1MjM1MX0.5rvXuuYdA95MsRAtpfiT-7R8SxdHh0sOm4ZsxvjeMUg';
         const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
         // Función de depuración
@@ -357,38 +448,54 @@
             }
         }
 
-        // Función para cargar la tabla de usuarios
+        // Función para cargar la tarjeta de usuarios
         async function loadUserTable(active) {
-            log(`Cargando tabla de usuarios ${active ? 'activos' : 'inactivos'}...`);
+            log(`Cargando tarjetas de usuarios ${active ? 'activos' : 'inactivos'}...`);
             const { data, error } = await supabase
                 .from('users')
                 .select('*')
-                .eq('is_active', active);
+                .eq('is_active', active)
+                .order('created_at', { ascending: false });
             if (error) {
                 log(`Error al cargar usuarios: ${error.message}`);
                 showAlert('Error', 'No se pudieron cargar los usuarios.', 'error');
             } else {
-                const tbody = document.getElementById(active ? 'active-users-table' : 'inactive-users-table');
-                tbody.innerHTML = '';
+                const container = document.getElementById(active ? 'active-users-table' : 'inactive-users-table');
+                container.innerHTML = '';
+                if (data.length === 0) {
+                    container.innerHTML = `<div class="col-12 text-center text-muted py-4">No hay usuarios ${active ? 'activos' : 'inactivos'} en este momento.</div>`;
+                    return;
+                }
                 data.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${user.id}</td>
-                        <td>${user.name || 'N/A'}</td>
-                        <td>${user.email}</td>
-                        <td>${user.phone || 'N/A'}</td>
-                        <td>${user.role}</td>
-                        <td>${new Date(user.created_at).toLocaleDateString()}</td>
-                        <td>
-                            ${active ? `
-                                <button class="btn btn-sm btn-warning" onclick="openEditUserModal('${user.id}')"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i></button>
-                            ` : `
-                                <button class="btn btn-sm btn-success" onclick="restoreUser('${user.id}')"><i class="fas fa-undo"></i></button>
-                            `}
-                        </td>
+                    const card = document.createElement('div');
+                    card.className = 'col-12 col-md-6 col-lg-4 user-card';
+                    const initial = user.name ? user.name.charAt(0).toUpperCase() : 'N';
+                    card.innerHTML = `
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="avatar">${initial}</div>
+                                <h5>${user.name || 'N/A'}</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="user-info">
+                                    <div><i class="fas fa-id-badge"></i> ${user.id}</div>
+                                    <div><i class="fas fa-envelope"></i> ${user.email}</div>
+                                    <div><i class="fas fa-phone"></i> ${user.phone || 'N/A'}</div>
+                                    <div><i class="fas fa-user-tag"></i> <span class="role-badge">${user.role}</span></div>
+                                    <div><i class="fas fa-calendar-alt"></i> ${new Date(user.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                ${active ? `
+                                    <button class="btn btn-sm btn-outline-warning" onclick="openEditUserModal('${user.id}')"><i class="fas fa-edit"></i> Editar</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i> Eliminar</button>
+                                ` : `
+                                    <button class="btn btn-sm btn-outline-success" onclick="restoreUser('${user.id}')"><i class="fas fa-undo"></i> Restaurar</button>
+                                `}
+                            </div>
+                        </div>
                     `;
-                    tbody.appendChild(row);
+                    container.appendChild(card);
                 });
             }
         }
