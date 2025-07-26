@@ -344,7 +344,8 @@
                                 <table class="table table-hover align-middle" id="rentals-table">
                                     <thead class="table-light">
                                         <tr>
-                                            <!-- <th class="ps-4">ID</th> --> <!-- Eliminado visualmente -->
+                                            <!-- <th class="ps-4">ID</th> -->
+                                            <th>Fecha</th>
                                             <th>Cliente</th>
                                             <th>Cabina</th>
                                             <th>Inicio</th>
@@ -726,6 +727,7 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
         },
         columns: [
             // { data: 'id' }, // Eliminado
+            { data: 'date', orderable: true, searchable: true },
             { data: 'client_name' },
             { data: 'machine_name' },
             { data: 'start_time' },
@@ -735,7 +737,7 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
             { data: 'amount' },
             { data: 'actions', orderable: false, searchable: false }
         ],
-        order: [[2, 'desc']], // Ordena por inicio
+        order: [[1, 'desc']], // Ordena por fecha
         pageLength: 10
     });
 }
@@ -865,8 +867,10 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
             const endTime = rental.end_time ? new Date(rental.end_time) : null;
             const timeUsed = rental.status === 'active' ? Math.floor((new Date() - startTime) / (1000 * 60)) : rental.time_used || 0;
             const statusBadge = getStatusBadge(rental.status);
+            const dateFormatted = formatDate(startTime);
             table.row.add({
-                id: rental.id,
+                // id: rental.id,
+                date: `<span class="badge bg-info text-white">${dateFormatted}</span>`,
                 client_name: clientName,
                 machine_name: machineName,
                 start_time: formatTime(startTime),
@@ -1199,12 +1203,13 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
         }
         const startTime = new Date(rental.start_time);
         const currentTime = new Date();
-        const timeUsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
-        const amount = (timeUsedMinutes / 60) * rental.rate;
+        const elapsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
+        const hoursUsed = Math.ceil(elapsedMinutes / 30) * 0.5; // Redondea al múltiplo de 0.5 horas (30 min)
+        const amount = hoursUsed * rental.rate;
         document.getElementById('finish-rental-id').value = rental.id;
         document.getElementById('finish-client').value = rental.users.name;
         document.getElementById('finish-machine').value = rental.machines.name;
-        document.getElementById('finish-time-used').value = `${timeUsedMinutes} minutos`;
+        document.getElementById('finish-time-used').value = `${elapsedMinutes} minutos`;
         document.getElementById('finish-amount').value = amount.toFixed(2);
         document.getElementById('finish-payment').value = amount.toFixed(2);
         document.getElementById('finish-change').value = '0.00';
@@ -1219,7 +1224,7 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
         document.getElementById('finish-change').value = change.toFixed(2);
     }
 
-    async function completeRental() {
+ async function completeRental() {
         const rentalId = document.getElementById('finish-rental-id').value;
         const payment = parseFloat(document.getElementById('finish-payment').value);
         const paymentMethod = document.getElementById('payment-method').value;
@@ -1234,7 +1239,7 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
         }
         const { data: rental, error: rentalError } = await supabase
             .from('rentals')
-            .select('machine_id, start_time')
+            .select('machine_id, start_time, rate')
             .eq('id', rentalId)
             .eq('status', 'active')
             .single();
@@ -1245,15 +1250,22 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
         }
         const startTime = new Date(rental.start_time);
         const currentTime = new Date();
-        const timeUsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
+        const elapsedMinutes = Math.floor((currentTime - startTime) / (1000 * 60));
+        const hoursUsed = Math.ceil(elapsedMinutes / 30) * 0.5; // Carga mínima de 30 min, luego por hora
+        const finalAmount = hoursUsed * rental.rate;
+        if (!finalAmount || isNaN(finalAmount)) {
+            log('Error: El monto final no puede ser nulo o NaN');
+            showAlert('Error', 'No se pudo calcular el monto final.', 'error');
+            return;
+        }
         const { error: updateError } = await supabase
             .from('rentals')
             .update({
                 end_time: currentTime.toISOString(),
-                time_used: timeUsedMinutes,
-                amount: amount,
+                time_used: elapsedMinutes,
+                amount: finalAmount,
                 payment_received: payment,
-                status: paymentMethod === 'debiendo' && payment < amount ? 'pending' : 'completed',
+                status: paymentMethod === 'debiendo' && payment < finalAmount ? 'pending' : 'completed',
                 payment_method: paymentMethod
             })
             .eq('id', rentalId);
@@ -1277,7 +1289,7 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
                 table_name: 'rentals',
                 record_id: rentalId,
                 action: 'complete',
-                changes: { time_used: timeUsedMinutes, amount: amount, payment_received: payment, payment_method: paymentMethod, status: paymentMethod === 'debiendo' && payment < amount ? 'pending' : 'completed' }
+                changes: { time_used: elapsedMinutes, amount: finalAmount, payment_received: payment, payment_method: paymentMethod, status: paymentMethod === 'debiendo' && payment < finalAmount ? 'pending' : 'completed' }
             });
         bootstrap.Modal.getInstance(document.getElementById('finishRentalModal')).hide();
         showAlert('Éxito', `Alquiler finalizado correctamente. Método de pago: ${getPaymentMethodText(paymentMethod)}.`, 'success');
@@ -1356,7 +1368,7 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
     function startRentalTimers() {
         setInterval(async () => {
             await loadActiveMachines();
-            await loadRentalsHistory();
+            await updateRentalStats(); // Solo actualiza estadísticas y máquinas activas
         }, 60000); // Actualiza cada minuto
     }
 
@@ -1412,6 +1424,13 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
                     const toDate = new Date(to);
                     toDate.setHours(23, 59, 59, 999);
                     query = query.lte('start_time', toDate.toISOString());
+                } else {
+                    // Si no hay "hasta", y es el día actual, usa 23:59:59
+                    const today = new Date();
+                    if (from && from === today.toISOString().split('T')[0]) {
+                        today.setHours(23, 59, 59, 999);
+                        query = query.lte('start_time', today.toISOString());
+                    }
                 }
                 if (filterStatus) query = query.eq('status', filterStatus);
 
@@ -1428,8 +1447,10 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
                     const endTime = rental.end_time ? new Date(rental.end_time) : null;
                     const timeUsed = rental.status === 'active' ? Math.floor((new Date() - startTime) / (1000 * 60)) : rental.time_used || 0;
                     const statusBadge = getStatusBadge(rental.status);
+                    const dateFormatted = formatDate(startTime);
                     table.row.add({
-                        // id: rental.id, // Eliminado
+                        // id: rental.id,
+                        date: `<span class="badge bg-info text-white">${dateFormatted}</span>`,
                         client_name: clientName,
                         machine_name: machineName,
                         start_time: formatTime(startTime),
@@ -1464,14 +1485,14 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
             showAlert('Error', 'No se pudieron exportar los alquileres.', 'error');
             return;
         }
-        let csvContent = 'ID,Cliente,Cabina,Inicio,Fin,Tiempo Usado,Estado,Monto,Método de Pago\n';
+        let csvContent = 'Fecha,Cliente,Cabina,Inicio,Fin,Tiempo Usado,Estado,Monto,Método de Pago\n';
         rentals.forEach(rental => {
             const clientName = rental.users.name || 'Cliente desconocido';
             const machineName = rental.machines.name || 'Cabina desconocida';
             const startTime = new Date(rental.start_time);
             const endTime = rental.end_time ? new Date(rental.end_time) : null;
             const timeUsed = rental.status === 'active' ? Math.floor((new Date() - startTime) / (1000 * 60)) : rental.time_used || 0;
-            csvContent += `${rental.id},${clientName},${machineName},${formatDateTime(startTime)},${endTime ? formatDateTime(endTime) : '-'},${timeUsed} min,${getStatusText(rental.status)},${rental.amount.toFixed(2)},${rental.payment_method ? getPaymentMethodText(rental.payment_method) : 'No especificado'}\n`;
+            csvContent += `${formatDate(startTime)},${clientName},${machineName},${formatDateTime(startTime)},${endTime ? formatDateTime(endTime) : '-'},${timeUsed} min,${getStatusText(rental.status)},${rental.amount.toFixed(2)},${rental.payment_method ? getPaymentMethodText(rental.payment_method) : 'No especificado'}\n`;
         });
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
@@ -1526,6 +1547,10 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
         return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
     }
 
+    function formatDate(date) {
+        return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
     function formatDateTime(date) {
         return `${date.toLocaleDateString('es-ES')} ${date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
     }
@@ -1553,4 +1578,4 @@ if (typeof $ !== 'undefined' && $.fn.DataTable) {
     document.addEventListener('DOMContentLoaded', initRentalsPage);
 </script>
 </body>
-</html
+</html>
